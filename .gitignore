@@ -1,0 +1,70 @@
+# Frontend (Node.js, React, TypeScript, Vite)
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+coverage/
+.vite/
+
+# TypeScript specific
+*.tsbuildinfo
+.npm
+.pnpm
+
+# Backend (Go)
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+
+# Go test and build artifacts
+*.test
+/bin/
+/pkg/
+/vendor/
+.go-cache/
+
+# Go workspace file
+go.work
+
+# IDE / Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# Local development/environment 
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
