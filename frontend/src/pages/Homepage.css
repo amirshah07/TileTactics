@@ -1,0 +1,74 @@
+.homepage-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f5efd6;
+  color: #3d2c17;
+  font-family: 'Georgia', serif;
+  line-height: 1.7;
+}
+
+.homepage-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(26, 110, 60, 0.2);
+}
+
+.homepage-header h1 {
+  color: #1a6e3c;
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.homepage-section {
+  margin-bottom: 4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(26, 110, 60, 0.1);
+}
+
+.homepage-section h2 {
+  color: #1a6e3c;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.homepage-section p {
+  margin-bottom: 1.2rem;
+}
+
+.article-button {
+  margin-top: 2rem;
+  text-align: right;
+}
+
+.navigate-to {
+  background-color: transparent;
+  color: #1a6e3c;
+  border: 2px solid #1a6e3c;
+  padding: 0.6rem 1.2rem;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navigate-to:hover {
+  background-color: #1a6e3c;
+  color: #f5efd6;
+}
+
+@media (max-width: 768px) {
+  .homepage-container {
+    padding: 1.5rem;
+  }
+  
+  .homepage-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .homepage-section h2 {
+    font-size: 1.6rem;
+  }
+}

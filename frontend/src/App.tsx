@@ -1,6 +1,6 @@
 import Homepage from "./pages/Homepage"
 import Navbar from "./components/Navbar"
-import './App.css'
+import "./App.css"
 
 export default function App() {
   return (

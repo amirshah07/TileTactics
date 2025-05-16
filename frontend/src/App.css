@@ -1,17 +1,22 @@
+/* Basic color scheme and essential styles */
 :root {
-  --primary-color: #1a6e3c; 
-  --secondary-color: #f5efd6; 
-  --text-color: #3d2c17; 
-  --background-color: #f0e9d6; 
-  --font-main: 'Arial', 'Times New Roman', serif; 
+  --primary-green: #1a6e3c;     /* Scrabble board green */
+  --darker-green: #135e31;      /* Darker green for borders/accents */
+  --cream: #f5efd6;             /* Cream tile color */
+  --dark-text: #3d2c17;         /* Dark brown for text */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-main);
-  color: var(--text-color);
-  background-color: var(--background-color);
+  background-color: var(--cream);
+  color: var(--dark-text);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.6;
 }
 
 .app-container {
@@ -22,4 +27,20 @@ body {
 
 main {
   flex: 1;
+  padding: 1rem;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-green);
+  text-decoration: none;
+}
+

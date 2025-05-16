@@ -1,0 +1,92 @@
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background-color: #1a6e3c; /* Deeper Scrabble board green */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  border-bottom: 3px solid #135e31; /* Darker green border for definition */
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 2rem;
+  position: relative;
+  max-width: 2000px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  width: 33.3%; /* Allocate a third of the space */
+}
+
+.navbar-left h1 {
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin: 0;
+  color: #f5efd6; /* Cream tile color */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+  font-family: 'Georgia', serif; /* More Scrabble-like font */
+}
+
+.navbar-left a {
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-left a:hover {
+  opacity: 0.9;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the items horizontally */
+  gap: 100px;
+  width: 33.3%; /* Allocate a third of the space */
+  margin: 0 auto; /* Center this section */
+}
+
+.navbar-center a {
+  color: #f5efd6; /* Cream tile color */
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.8rem;
+  position: relative;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.navbar-center a:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: #f5efd6;
+  transition: width 0.3s ease;
+}
+
+.navbar-center a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-center a:hover:after {
+  width: 100%; /* Full-width underline on hover */
+}
+
+/* Add an empty div with matching width for balance */
+.navbar-right {
+  width: 33.3%;
+}
