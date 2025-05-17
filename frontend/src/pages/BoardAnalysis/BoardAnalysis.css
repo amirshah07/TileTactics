@@ -1,0 +1,68 @@
+.board-analysis-container {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 67px); /* Based on your navbar height */
+  background-color: #f5efd6; /* Cream background to match your theme */
+}
+
+.board-analysis-container-left {
+  flex: 0 0 70%; /* Takes exactly 70% of the container width */
+  padding: 20px;
+  background-color: #f5efd6;
+  border-right: 2px solid #1a6e3c; /* Scrabble green border */
+  overflow: auto; /* Add scrolling if content overflows */
+}
+
+.board-analysis-container-right {
+  flex: 0 0 30%; /* Takes exactly 30% of the container width */
+  display: flex;
+  flex-direction: column; /* Stack the children vertically */
+}
+
+.board-analysis-container-right-top {
+  flex: 0 0 60%; /* Takes exactly 60% of the right container height */
+  padding: 20px;
+  background-color: #f5efd6;
+  border-bottom: 2px solid #1a6e3c; /* Scrabble green border */
+  overflow: auto; /* Add scrolling if content overflows */
+}
+
+.board-analysis-container-right-bottom {
+  flex: 0 0 40%; /* Takes exactly 40% of the right container height */
+  padding: 20px;
+  background-color: #f5efd6;
+  overflow: auto; /* Add scrolling if content overflows */
+}
+
+/* Adding some basic styling for the content */
+.board-analysis-container h1 {
+  color: #1a6e3c;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+/* Adjust font sizes for smaller screens but keep layout the same */
+@media (max-width: 768px) {
+  .board-analysis-container h1 {
+    font-size: 1.4rem;
+  }
+  
+  .board-analysis-container-left,
+  .board-analysis-container-right-top,
+  .board-analysis-container-right-bottom {
+    padding: 10px;
+  }
+}
+
+/* Even smaller screens */
+@media (max-width: 480px) {
+  .board-analysis-container h1 {
+    font-size: 1.2rem;
+  }
+  
+  .board-analysis-container-left,
+  .board-analysis-container-right-top,
+  .board-analysis-container-right-bottom {
+    padding: 8px;
+  }
+}
