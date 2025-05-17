@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -24,17 +25,16 @@ export default function Navbar() {
   return (
     <div className="navbar">
       <div className="navbar-container">
-        
         <div className="navbar-left">
-          <a href="/">
+          <Link to="/">
             <h1>TileTactics</h1>
-          </a>
+          </Link>
         </div>
         
         <div className="navbar-center desktop-menu">
-          <a href="/boardnalysis">Board Analysis</a>
-          <a href="/vsai">vs TileTacticsAI</a>
-          <a href="/wordfinder">Word Finder</a>
+          <Link to="/boardnalysis">Board Analysis</Link>
+          <Link to="/vsai">vs TileTacticsAI</Link>
+          <Link to="/wordfinder">Word Finder</Link>
         </div>
         
         <div className="navbar-right">
@@ -49,9 +49,9 @@ export default function Navbar() {
       </div>
       
       <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
-        <a href="/boardnalysis">Board Analysis</a>
-        <a href="/vsai">vs TileTacticsAI</a>
-        <a href="/wordfinder">Word Finder</a>
+        <Link to="/boardnalysis" onClick={toggleMenu}>Board Analysis</Link>
+        <Link to="/vsai" onClick={toggleMenu}>vs TileTacticsAI</Link>
+        <Link to="/wordfinder" onClick={toggleMenu}>Word Finder</Link>
       </div>
     </div>
   );
