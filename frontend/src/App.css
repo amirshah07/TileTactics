@@ -1,9 +1,8 @@
-/* Basic color scheme and essential styles */
 :root {
-  --primary-green: #1a6e3c;     /* Scrabble board green */
-  --darker-green: #135e31;      /* Darker green for borders/accents */
-  --cream: #f5efd6;             /* Cream tile color */
-  --dark-text: #3d2c17;         /* Dark brown for text */
+  --primary-green: #1a6e3c;     
+  --darker-green: #135e31;     
+  --cream: #f5efd6;             
+  --dark-text: #3d2c17;         
 }
 
 * {
