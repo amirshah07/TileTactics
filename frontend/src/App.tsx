@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Homepage from './pages/Homepage';
-import BoardAnalysis from './pages/BoardAnalysis';
-import VsAI from './pages/VsAI';
-import WordFinder from './pages/WordFinder';
+import Navbar from './components/Navbar/Navbar';
+import Homepage from './pages/Homepage/Homepage';
+import BoardAnalysis from './pages/BoardAnalysis/BoardAnalysis';
+import VsAI from './pages/vsAI/VsAI';
+import WordFinder from './pages/WordFinder/WordFinder';
 import './App.css';
 
 export default function App() {
@@ -14,7 +14,7 @@ export default function App() {
         <main>
           <Routes>
             <Route path="/" element={<Homepage/>} />
-            <Route path="/boardnalysis" element={<BoardAnalysis/>} />
+            <Route path="/boardanalysis" element={<BoardAnalysis/>} />
             <Route path="/vsai" element={<VsAI/>} />
             <Route path="/wordfinder" element={<WordFinder/>} />
           </Routes>
