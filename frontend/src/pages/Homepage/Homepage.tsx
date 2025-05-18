@@ -2,7 +2,7 @@ import './Homepage.css';
 
 export default function Homepage() {
   const navigateToAnalysis = () => {
-    window.location.href = '/boardnalysis';
+    window.location.href = '/boardanalysis';
   };
   
   const navigateToAI = () => {
