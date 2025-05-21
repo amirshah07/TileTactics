@@ -2,15 +2,15 @@ import './Homepage.css';
 
 export default function Homepage() {
   const navigateToAnalysis = () => {
-    window.location.href = '/boardanalysis';
+    window.location.href = '/board-analysis';
   };
   
   const navigateToAI = () => {
-    window.location.href = '/vsai';
+    window.location.href = '/vs-ai';
   };
   
   const navigateToWordFinder = () => {
-    window.location.href = '/wordfinder';
+    window.location.href = '/word-finder';
   };
 
   return (
