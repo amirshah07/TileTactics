@@ -1,11 +1,9 @@
 :root {
-  /* Original variables */
   --primary-green: #1a6e3c;     
   --darker-green: #135e31;     
   --cream: #f5efd6;             
   --dark-text: #3d2c17;
   
-  /* New variables (with aliases to existing ones where applicable) */
   --primary: var(--primary-green);
   --primary-light: rgba(26, 110, 60, 0.08);
   --primary-hover: var(--darker-green);
