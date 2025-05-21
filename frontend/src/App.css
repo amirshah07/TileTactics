@@ -1,8 +1,19 @@
 :root {
+  /* Original variables */
   --primary-green: #1a6e3c;     
   --darker-green: #135e31;     
   --cream: #f5efd6;             
-  --dark-text: #3d2c17;         
+  --dark-text: #3d2c17;
+  
+  /* New variables (with aliases to existing ones where applicable) */
+  --primary: var(--primary-green);
+  --primary-light: rgba(26, 110, 60, 0.08);
+  --primary-hover: var(--darker-green);
+  --danger: #dc3545;
+  --danger-hover: #c82333;
+  --background: var(--cream);
+  --text: #444;
+  --border-radius: 8px;
 }
 
 * {
@@ -14,8 +25,9 @@
 body {
   background-color: var(--cream);
   color: var(--dark-text);
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'Open Sans', 'Segoe UI', 'Georgia', 'Times New Roman', sans-serif;
   line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
 .app-container {
@@ -32,6 +44,7 @@ main {
 h1, h2, h3, h4, h5, h6 {
   color: var(--primary-green);
   margin-bottom: 1rem;
+  letter-spacing: 0.02em;
 }
 
 p {
@@ -42,4 +55,3 @@ a {
   color: var(--primary-green);
   text-decoration: none;
 }
-
