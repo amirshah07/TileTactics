@@ -32,7 +32,7 @@ export default function Navbar() {
         </div>
         
         <div className="navbar-center desktop-menu">
-          <Link to="/boardnalysis">Board Analysis</Link>
+          <Link to="/boardanalysis">Board Analysis</Link>
           <Link to="/vsai">vs TileTacticsAI</Link>
           <Link to="/wordfinder">Word Finder</Link>
         </div>
