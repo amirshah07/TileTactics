@@ -32,9 +32,9 @@ export default function Navbar() {
         </div>
         
         <div className="navbar-center desktop-menu">
-          <Link to="/boardanalysis">Board Analysis</Link>
-          <Link to="/vsai">vs TileTacticsAI</Link>
-          <Link to="/wordfinder">Word Finder</Link>
+          <Link to="/board-analysis">Board Analysis</Link>
+          <Link to="/vs-ai">vs TileTacticsAI</Link>
+          <Link to="/word-finder">Word Finder</Link>
         </div>
         
         <div className="navbar-right">
@@ -49,9 +49,9 @@ export default function Navbar() {
       </div>
       
       <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
-        <Link to="/boardnalysis" onClick={toggleMenu}>Board Analysis</Link>
-        <Link to="/vsai" onClick={toggleMenu}>vs TileTacticsAI</Link>
-        <Link to="/wordfinder" onClick={toggleMenu}>Word Finder</Link>
+        <Link to="/board-analysis" onClick={toggleMenu}>Board Analysis</Link>
+        <Link to="/vs-ai" onClick={toggleMenu}>vs TileTacticsAI</Link>
+        <Link to="/word-finder" onClick={toggleMenu}>Word Finder</Link>
       </div>
     </div>
   );
