@@ -2,8 +2,8 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f5efd6;
-  color: #3d2c17;
+  background-color: var(--background);
+  color: var(--dark-text);
   font-family: 'Georgia', serif;
   line-height: 1.7;
 }
@@ -16,7 +16,7 @@
 }
 
 .homepage-header h1 {
-  color: #1a6e3c;
+  color: var(--primary);
   font-size: 3.5rem;
   margin-bottom: 0.5rem;
   letter-spacing: 0.5px;
@@ -29,7 +29,7 @@
 }
 
 .homepage-section h2 {
-  color: #1a6e3c;
+  color: var(--primary);
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -45,8 +45,8 @@
 
 .navigate-to {
   background-color: transparent;
-  color: #1a6e3c;
-  border: 2px solid #1a6e3c;
+  color: var(--primary);
+  border: 2px solid var(--primary);
   padding: 0.6rem 1.2rem;
   font-family: 'Georgia', serif;
   font-size: 1rem;
@@ -55,8 +55,8 @@
 }
 
 .navigate-to:hover {
-  background-color: #1a6e3c;
-  color: #f5efd6;
+  background-color: var(--primary);
+  color: var(--background);
 }
 
 @media (max-width: 768px) {
