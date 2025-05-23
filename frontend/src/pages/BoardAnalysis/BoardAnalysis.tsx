@@ -1,25 +1,12 @@
-import './BoardAnalysis.css';
+import { NoMoreTilesToastProvider } from '../../components/NoMoreTilesToast/NoMoreTilesToastContext';
+import BoardAnalysisContent from './BoardAnalysisContent';
 
-export default function BoardAnalysis() {
+const BoardAnalysis = () => {
   return (
-    <div className="board-analysis-container">
-
-      <div className='board-analysis-container-left'>
-        <h1>board goes here</h1>
-      </div>
-
-      <div className='board-analysis-container-right'>
-
-        <div className='board-analysis-container-right-top'>
-          <h1>solutions goes here</h1>
-        </div>
-
-        <div className='board-analysis-container-right-bottom'>
-          <h1>tile counts goes here</h1>
-        </div>        
-
-      </div>
-    
-    </div>
+    <NoMoreTilesToastProvider>
+      <BoardAnalysisContent />
+    </NoMoreTilesToastProvider>
   );
-}
+};
+
+export default BoardAnalysis;

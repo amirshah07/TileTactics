@@ -1,68 +1,490 @@
 .board-analysis-container {
   display: flex;
   width: 100%;
-  min-height: calc(100vh - 67px); /* Based on your navbar height */
-  background-color: #f5efd6; /* Cream background to match your theme */
+  min-height: calc(100vh - 150px);
+  background-color: var(--background);
+  max-width: 100vw;
 }
 
-.board-analysis-container-left {
-  flex: 0 0 70%; /* Takes exactly 70% of the container width */
-  padding: 20px;
-  background-color: #f5efd6;
-  border-right: 2px solid #1a6e3c; /* Scrabble green border */
-  overflow: auto; /* Add scrolling if content overflows */
-}
-
-.board-analysis-container-right {
-  flex: 0 0 30%; /* Takes exactly 30% of the container width */
+.board-analysis-left {
+  flex: 0 0 20%;
   display: flex;
-  flex-direction: column; /* Stack the children vertically */
+  flex-direction: column;
+  background-color: var(--background);
+  position: relative;
+  border-right: 3px solid rgba(26, 110, 60, 0.08);
 }
 
-.board-analysis-container-right-top {
-  flex: 0 0 60%; /* Takes exactly 60% of the right container height */
+.dictionary-container, 
+.how-to-play-container {
+  margin: 15px;
+  margin-bottom: 30px;
   padding: 20px;
-  background-color: #f5efd6;
-  border-bottom: 2px solid #1a6e3c; /* Scrabble green border */
-  overflow: auto; /* Add scrolling if content overflows */
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: #f2edd9;
 }
 
-.board-analysis-container-right-bottom {
-  flex: 0 0 40%; /* Takes exactly 40% of the right container height */
-  padding: 20px;
-  background-color: #f5efd6;
-  overflow: auto; /* Add scrolling if content overflows */
+.section-heading {
+  color: var(--primary);
+  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 600;
+  position: relative;
+  letter-spacing: 0.02em;
 }
 
-/* Adding some basic styling for the content */
-.board-analysis-container h1 {
-  color: #1a6e3c;
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+.dictionary-container .section-heading::after,
+.how-to-play-container .section-heading::after,
+.board-analysis-right-top h3::after {
+  display: none;
 }
 
-/* Adjust font sizes for smaller screens but keep layout the same */
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 12px 32px 12px 16px;
+  border: 1px solid rgba(26, 110, 60, 0.3);
+  border-radius: 8px;
+  background-color: #faf4de;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  appearance: none;
+  transition: all 0.2s ease;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.custom-select:hover {
+  border-color: rgba(26, 110, 60, 0.6);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--primary);
+  pointer-events: none;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-focus);
+}
+
+.how-to-play-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: item;
+}
+
+.how-to-play-list li {
+  margin-bottom: 15px;
+  padding-left: 35px;
+  position: relative;
+  font-size: 1.01rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.how-to-play-list li::before {
+  content: counter(item);
+  counter-increment: item;
+  position: absolute;
+  left: 5px;
+  top: 0;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.how-to-play-list li::after {
+  content: ".";
+  position: absolute;
+  left: 17px;
+  top: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.board-analysis-center {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px 30px;
+  background-color: var(--background);
+  position: relative;
+  border-right: 3px solid rgba(26, 110, 60, 0.08);
+}
+
+.board-rack-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px !important;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.board-rack-wrapper .rack-container {
+  margin-top: 15px !important;
+  align-self: center;
+}
+
+.board-analysis-right {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--background);
+}
+
+.board-analysis-right-top {
+  flex: 0 0 60%;
+  padding: 25px;
+  background-color: var(--background);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 3px solid rgba(26, 110, 60, 0.08);
+}
+
+.board-analysis-right-bottom {
+  flex: 0 0 40%;
+  padding: 25px;
+  background-color: var(--background);
+}
+
+.board-analysis-right-top h3 {
+  color: var(--primary);
+  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 600;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+.board-analysis-right-top p {
+  margin-top: 0;
+  margin-bottom: 25px;
+  line-height: 1.5;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.analyse-button-container {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.analyse-button {
+  width: 100%;
+  background-color: var(--primary);
+  color: #fff;
+  padding: 10px 16px !important;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+  font-family: inherit;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.analyse-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.analyse-button:disabled {
+  background-color: var(--disabled-background);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+}
+
+.info-icon-link {
+  display: inline-block;
+  text-decoration: none;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.info-icon {
+  color: var(--dark-text);
+  position: relative;
+  transition: opacity 0.2s ease;
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.4;
+}
+
+.info-icon:hover {
+  opacity: 0.75;
+}
+
+@media (max-width: 1340px) and (min-width: 1025px) {
+  .clear-board-button {
+    right: -38px !important;
+    width: 34px !important;
+    height: 34px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .board-analysis-container {
+    flex-wrap: wrap;
+  }
+  
+  .board-analysis-left {
+    flex: 0 0 30%;
+    border-right: 3px solid rgba(26, 110, 60, 0.08);
+  }
+  
+  .board-analysis-center {
+    flex: 0 0 70%;
+    border-right: none;
+    border-bottom: 3px solid rgba(26, 110, 60, 0.08);
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
+  
+  .board-analysis-right {
+    flex: 0 0 100%;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .board-analysis-right-top {
+    flex: 0 0 60%;
+    border-bottom: none;
+    border-right: 3px solid rgba(26, 110, 60, 0.08);
+  }
+  
+  .board-analysis-right-bottom {
+    flex: 0 0 40%;
+  }
+}
+
+@media (max-width: 992px) {
+  .board-analysis-container {
+    flex-direction: column;
+  }
+  
+  .board-analysis-left {
+    flex: 0 0 auto;
+    width: 100%;
+    padding-bottom: 20px;
+    border-right: none;
+    border-bottom: 3px solid rgba(26, 110, 60, 0.08);
+  }
+  
+  .board-analysis-center {
+    flex: 0 0 auto;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  
+  .board-analysis-right {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .board-analysis-right-top {
+    border-right: none;
+    border-bottom: 3px solid rgba(26, 110, 60, 0.08);
+  }
+  
+  .dictionary-container, 
+  .how-to-play-container {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 @media (max-width: 768px) {
-  .board-analysis-container h1 {
+  .board-analysis-container {
+    min-width: 300px;
+  }
+  
+  .board-analysis-center {
+    padding: 10px 15px;
+  }
+  
+  .board-rack-wrapper {
+    margin-top: 5px !important;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  
+  .board-analysis-right-top,
+  .board-analysis-right-bottom {
+    padding: 20px;
+  }
+  
+  .section-heading,
+  .board-analysis-right-top h3 {
     font-size: 1.4rem;
   }
   
-  .board-analysis-container-left,
-  .board-analysis-container-right-top,
-  .board-analysis-container-right-bottom {
-    padding: 10px;
+  .analyse-button-container {
+    position: static;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .rack-container {
+    margin-top: 10px !important;
   }
 }
 
-/* Even smaller screens */
+@media (max-width: 600px) {
+  .board-analysis-center {
+    padding: 8px 12px;
+  }
+  
+  .board-rack-wrapper {
+    margin-top: 3px !important;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+}
+
+@media (max-width: 576px) {
+  .board-analysis-container,
+  .board-analysis-left,
+  .board-analysis-right-top,
+  .board-analysis-right-bottom {
+    padding: 10px;
+  }
+  
+  .dictionary-container, 
+  .how-to-play-container {
+    margin: 10px 0;
+    padding: 15px;
+  }
+  
+  .section-heading,
+  .board-analysis-right-top h3 {
+    font-size: 1.3rem;
+  }
+  
+  .analyse-button {
+    padding: 8px 12px !important;
+  }
+  
+  .how-to-play-list li {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+  
+  .custom-select {
+    padding: 10px 28px 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .select-arrow {
+    right: 8px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--primary);
+  }
+}
+
 @media (max-width: 480px) {
-  .board-analysis-container h1 {
+  .board-analysis-center {
+    padding: 5px 10px;
+  }
+  
+  .board-rack-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px !important;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+}
+
+@media (max-width: 420px) {
+  .board-analysis-center {
+    padding: 5px 8px;
+  }
+  
+  .section-heading,
+  .board-analysis-right-top h3 {
     font-size: 1.2rem;
   }
   
-  .board-analysis-container-left,
-  .board-analysis-container-right-top,
-  .board-analysis-container-right-bottom {
-    padding: 8px;
+  .how-to-play-list li {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  
+  .custom-select {
+    padding: 8px 24px 8px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .select-arrow {
+    right: 6px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid var(--primary);
+  }
+}
+
+@media (max-width: 380px) {
+  .board-analysis-center {
+    padding: 3px 5px;
+  }
+  
+  .dictionary-container, 
+  .how-to-play-container {
+    margin: 8px 0;
+    padding: 12px;
+  }
+  
+  .board-analysis-right-top,
+  .board-analysis-right-bottom {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 340px) {
+  .board-analysis-center {
+    padding: 2px 3px;
+  }
+  
+  .section-heading,
+  .board-analysis-right-top h3 {
+    font-size: 1.1rem;
+  }
+  
+  .analyse-button {
+    padding: 6px 10px !important;
+    font-size: 0.9rem !important;
   }
 }

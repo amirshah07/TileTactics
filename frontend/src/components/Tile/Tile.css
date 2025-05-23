@@ -1,0 +1,155 @@
+.tile {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  font-family: Tahoma;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(26, 110, 60, 0.3);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
+}
+
+.tile[data-multiplier="TW"] {
+  background-color: #e63946;
+}
+
+.tile[data-multiplier="DW"] {
+  background-color: #f5ba31;
+}
+
+.tile[data-multiplier="TL"] {
+  background-color: #4895ef;
+}
+
+.tile[data-multiplier="DL"] {
+  background-color: #98d6ed;
+}
+
+.tile[data-multiplier="STAR"] {
+  background-color: #f8c967;
+}
+
+.tile[data-multiplier="NONE"] {
+  background-color: var(--primary);
+}
+
+.tile.has-letter {
+  background-color: var(--background) !important;
+}
+
+.tile.selected {
+  box-shadow: 0 0 0 2px rgba(12, 76, 38, 0.8);
+  z-index: 10;
+  transform: translateY(-2.5px);
+  border: 2px solid #000;
+}
+
+.tile:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2.5px);
+}
+
+.letter-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.letter {
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+}
+
+.tile.is-blank .letter-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 3px;
+  padding-left: 7px;
+}
+
+.tile.is-blank .letter {
+  color: #555;
+  text-decoration: none;
+  font-style: italic;
+  margin-right: 1px;
+  margin-bottom: -2px;
+  font-size: 18px;
+  transform: translateX(-2px);
+}
+
+.tile.is-blank .points {
+  position: static;
+  margin-bottom: -2px;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.points {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 9px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.multiplier-label {
+  font-size: 6.5px;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  line-height: 1.1;
+  padding: 3px 1px;
+  word-break: break-word;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.2px;
+}
+
+.star-label {
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.tile.has-letter {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid #d8cfa7;
+}
+
+.tile.has-letter.selected {
+  border: 2px solid #000;
+}
+
+.tile.has-letter .letter {
+  color: #000;
+  font-size: 20px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.tile.has-letter {
+  background-image: linear-gradient(to bottom, #f8f4e3, #eee8c8) !important;
+  box-shadow: 
+    0 2px 3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+}

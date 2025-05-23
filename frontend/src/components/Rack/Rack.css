@@ -1,0 +1,342 @@
+.rack-container {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+}
+
+.rack-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  position: relative;
+}
+
+.rack {
+  display: flex;
+  justify-content: center;
+  background-color: #8b5a2b;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.rack-tile {
+  width: 40px;
+  height: 40px;
+  margin: 0 2px;
+  background-color: var(--background);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.25s ease-out !important;
+  cursor: pointer !important;
+  z-index: 1 !important;
+}
+
+.rack-tile input {
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  text-transform: uppercase;
+  color: #000;
+  outline: none;
+  cursor: pointer;
+}
+
+.rack-tile .points {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 10px;
+}
+
+.rack-tile.is-blank input {
+  background: transparent;
+  color: transparent;
+  caret-color: black;
+}
+
+.rack-tile.is-blank {
+  background-color: var(--background);
+  cursor: pointer;
+}
+
+.rack-tile.has-letter {
+  background-color: var(--background);
+}
+
+.rack-tile:hover {
+  transform: translateY(-4px) !important;
+  z-index: 100 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.rack-tile.selected {
+  transform: translateY(-4px) !important;
+  z-index: 100 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+  animation: pulse 0.5s ease;
+}
+
+.rack-container.has-selection .rack-tile {
+  pointer-events: none !important;
+}
+
+.rack-container.has-selection .rack-tile.selected {
+  pointer-events: auto !important;
+}
+
+.clear-rack-button {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: var(--danger) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  position: absolute !important;
+  right: 50px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.clear-rack-button svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.5 !important;
+  color: white !important;
+  fill: none !important;
+  display: block !important;
+  stroke: currentColor !important;
+}
+
+.clear-rack-button:hover {
+  background-color: var(--danger-hover) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.clear-rack-button:active {
+  background-color: #bd2130 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1) translateY(-4px); }
+  50% { transform: scale(1.05) translateY(-4px); }
+  100% { transform: scale(1) translateY(-4px); }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 8px;
+  width: 350px;
+  max-width: 90vw;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal h3 {
+  margin: 0;
+  color: var(--primary);
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal p {
+  margin: 0;
+  color: #333;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  gap: 10px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.modal-btn.cancel {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.modal-btn.cancel:hover {
+  background-color: #e1e1e1;
+}
+
+.modal-btn.confirm {
+  background-color: var(--danger);
+  color: white;
+}
+
+.modal-btn.confirm:hover {
+  background-color: var(--danger-hover);
+}
+
+@media (max-width: 768px) and (min-width: 581px) {
+  .rack-container {
+    margin-top: 15px;
+  }
+  
+  .rack-wrapper {
+    gap: 10px;
+  }
+  
+  .clear-rack-button {
+    width: 32px !important;
+    height: 32px !important;
+    right: 40px !important;
+  }
+  
+  .clear-rack-button svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+@media (max-width: 580px) and (min-width: 481px) {
+  .clear-rack-button {
+    right: -10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .rack-container {
+    margin-top: 15px;
+  }
+  
+  .rack-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: static;
+  }
+  
+  .rack {
+    width: auto !important;
+    max-width: 380px !important;
+    padding: 8px 10px;
+    justify-content: center;
+  }
+  
+  .rack-tile {
+    width: 38px;
+    height: 38px;
+    margin: 0 2px;
+  }
+  
+  .rack-tile input {
+    font-size: 18px;
+  }
+  
+  .clear-rack-button {
+    width: 28px !important;
+    height: 28px !important;
+    position: static !important;
+    transform: none !important;
+    right: auto !important;
+    top: auto !important;
+  }
+  
+  .clear-rack-button svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .rack {
+    max-width: 320px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .rack-tile {
+    width: 34px;
+    height: 34px;
+    margin: 0 1px;
+  }
+  
+  .rack-tile input {
+    font-size: 16px;
+  }
+  
+  .rack-tile .points {
+    font-size: 9px;
+  }
+  
+  .clear-rack-button {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .clear-rack-button svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .rack {
+    max-width: 280px !important;
+    padding: 4px 6px !important;
+  }
+  
+  .rack-tile {
+    width: 32px;
+    height: 32px;
+    margin: 0 1px;
+  }
+  
+  .rack-tile input {
+    font-size: 14px;
+  }
+}
