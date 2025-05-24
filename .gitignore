@@ -68,3 +68,24 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# WASM build output
+*.wasm
+frontend/public/scrabble.wasm
+frontend/public/wasm_exec.js
+
+# Compressed dictionaries (build artifacts)
+frontend/public/dictionaries/*.gz
+frontend/public/dictionaries/*.json
+
+# Test data (if you don't want to commit large test files)
+backend/test/testdata/large_*.txt
+
+# Benchmark results
+*.bench
+*.prof
+
+# Coverage reports
+coverage.out
+coverage.html
+*.coverprofile
