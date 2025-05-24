@@ -78,7 +78,7 @@ frontend/public/wasm_exec.js
 frontend/public/dictionaries/*.gz
 frontend/public/dictionaries/*.json
 
-# Test data (if you don't want to commit large test files)
+# Test data 
 backend/test/testdata/large_*.txt
 
 # Benchmark results
