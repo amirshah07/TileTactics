@@ -22,6 +22,9 @@ test-board:
 test-gaddag:
 	go test -v ./internal/gaddag/...
 
+test-generator:
+	go test -v ./internal/generator/...
+
 # Run tests with coverage
 test-coverage:
 	go test -coverprofile=coverage.out ./...
