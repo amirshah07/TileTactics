@@ -32,6 +32,15 @@ func main() {
 	b.SetTile(7, 8, &game.Tile{Letter: 'A', Value: 1})
 	b.SetTile(7, 9, &game.Tile{Letter: 'T', Value: 1})
 
+	// Verify tiles are placed correctly
+	fmt.Println("\nVerifying board tiles:")
+	for col := 6; col <= 10; col++ {
+		tile := b.GetTile(7, col)
+		if tile != nil {
+			fmt.Printf("  Position (7,%d): %c (value=%d)\n", col, tile.Letter, tile.Value)
+		}
+	}
+
 	// Show the board
 	fmt.Println("\nBoard state:")
 	printBoard(b)
@@ -51,23 +60,9 @@ func main() {
 	moves := gen.GenerateMoves(rack)
 	fmt.Printf("\nFound %d possible moves\n", len(moves))
 
-	// Debug: Check for invalid words
-	fmt.Println("\nChecking for invalid words:")
-	invalidCount := 0
-	for _, move := range moves {
-		if !g.Contains(move.Word) {
-			fmt.Printf("  INVALID: %s at (%d,%d)\n", move.Word, move.Position.Row, move.Position.Col)
-			invalidCount++
-		}
-	}
-	if invalidCount > 0 {
-		fmt.Printf("Found %d invalid words!\n", invalidCount)
-	} else {
-		fmt.Println("All words are valid!")
-	}
-
-	// Show all moves that interact with existing tiles
-	fmt.Println("\nMoves using existing tiles:")
+	// Show moves using existing tiles with more details
+	fmt.Println("\nMoves using existing tiles (should score higher):")
+	connectingMoves := 0
 	for _, move := range moves {
 		// Check if this move uses any existing tiles
 		usesExisting := false
@@ -79,26 +74,34 @@ func main() {
 		}
 
 		if usesExisting && g.Contains(move.Word) {
-			fmt.Printf("  %s at (%d,%d) %s - %d tiles placed\n",
+			connectingMoves++
+			fmt.Printf("  %s at (%d,%d) %s - %d points, %d tiles placed\n",
 				move.Word,
 				move.Position.Row,
 				move.Position.Col,
 				dirString(move.Direction),
+				move.Score,
 				len(move.TilesPlaced))
 		}
 	}
+	fmt.Printf("Found %d moves that connect to existing tiles\n", connectingMoves)
 
-	// Show first 10 valid moves
-	fmt.Println("\nFirst 10 valid moves:")
+	// Show top 10 moves by score
+	fmt.Println("\nTop 10 moves by score:")
 	count := 0
+	nonZeroCount := 0
 	for _, move := range moves {
+		if move.Score > 0 {
+			nonZeroCount++
+		}
 		if g.Contains(move.Word) {
-			fmt.Printf("  %d. %s at (%d,%d) %s - %d tiles placed\n",
+			fmt.Printf("  %d. %s at (%d,%d) %s - %d points, %d tiles placed\n",
 				count+1,
 				move.Word,
 				move.Position.Row,
 				move.Position.Col,
 				dirString(move.Direction),
+				move.Score,
 				len(move.TilesPlaced))
 			count++
 			if count >= 10 {
@@ -106,6 +109,7 @@ func main() {
 			}
 		}
 	}
+	fmt.Printf("\nTotal moves with non-zero scores: %d\n", nonZeroCount)
 }
 
 func printBoard(b *board.Board) {
