@@ -1,27 +1,46 @@
-.PHONY: run test build-wasm clean
+.PHONY: all build run test clean
 
-# Run CLI
-run:
-	go run cmd/cli/main.go
+# Default target
+all: test build
+
+# Build the CLI binary
+build:
+	go build -o bin/tiletactics cmd/cli/main.go
+
+# Run the CLI
+run: build
+	./bin/tiletactics
 
 # Run all tests
 test:
 	go test -v ./...
 
-# Build WASM (for later)
-build-wasm:
-	GOOS=js GOARCH=wasm go build -ldflags="-s -w" \
-		-o ../frontend/public/scrabble.wasm ./cmd/wasm
+# Run specific package tests
+test-board:
+	go test -v ./internal/board/...
+
+test-gaddag:
+	go test -v ./internal/gaddag/...
+
+# Run tests with coverage
+test-coverage:
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"
 
 # Clean build artifacts
 clean:
-	go clean
-	rm -f ../frontend/public/scrabble.wasm
+	rm -rf bin/ coverage.out coverage.html
 
-# Format code
-fmt:
-	go fmt ./...
+# Development mode - rebuild and run on changes
+# Requires: go install github.com/cosmtrek/air@latest
+dev:
+	air
 
-# Run linter (install: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
-lint:
-	golangci-lint run
+# Quick test run without verbose output
+quick-test:
+	go test ./...
+
+# Benchmark tests
+bench:
+	go test -bench=. -benchmem ./...
