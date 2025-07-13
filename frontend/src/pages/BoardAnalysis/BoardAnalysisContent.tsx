@@ -6,6 +6,8 @@ import Rack from '../../components/Rack/Rack';
 import TileCounts from '../../components/TileCounts/TileCounts';
 import { NoMoreTilesToastProvider } from '../../components/NoMoreTilesToast/NoMoreTilesToastContext';
 import type { BoardState } from '../../utils/types';
+import { analyzeBoard, type MoveResult } from '../../utils/wasmLoader';
+import { LETTER_VALUES, LETTER_DISTRIBUTION } from '../../utils/constants';
 
 export default function BoardAnalysis() {
   const [boardState, setBoardState] = useState<BoardState | null>(null);
@@ -15,6 +17,9 @@ export default function BoardAnalysis() {
   const [selectedDictionary, setSelectedDictionary] = useState<string>('csw24');
   const boardRef = useRef<HTMLDivElement>(null);
   const [shouldClearFocus, setShouldClearFocus] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState<MoveResult[] | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   
   // Tile counting 
   const { usedTiles, blankCount } = useMemo(() => {
@@ -122,12 +127,50 @@ export default function BoardAnalysis() {
     setActiveComponent('rack');
   }, []);
 
-  const handleAnalyseClick = useCallback(() => {
-    console.log('Current board state:', boardState);
-    console.log('Current rack letters:', rackLetters);
-    console.log('Current dictionary:', selectedDictionary);
-    console.log('Blank tiles in rack:', rackBlanks);
-  }, [boardState, rackLetters, rackBlanks, selectedDictionary]);
+  const handleAnalyseClick = useCallback(async () => {
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    
+    try {
+      // Convert board to WASM format
+      const board = boardState || Array(15).fill(null).map(() => Array(15).fill(null));
+      const boardForWasm = board.map(row => 
+        row.map(cell => cell ? {
+          letter: cell.letter.toUpperCase(),
+          value: LETTER_VALUES[cell.letter.toUpperCase()] || 0,
+          isBlank: cell.isBlank
+        } : null)
+      );
+      
+      // Convert rack to WASM format
+      const rack = rackLetters.map((letter, idx) => ({
+        letter: letter.toUpperCase(),
+        value: LETTER_VALUES[letter.toUpperCase()] || 0,
+        isBlank: rackBlanks[idx]
+      }));
+      
+      // Calculate remaining tiles
+      const remainingTiles: Record<string, number> = {};
+      Object.keys(LETTER_DISTRIBUTION).forEach(letter => {
+        const key = letter === 'BLANK' ? '?' : letter;
+        const used = letter === 'BLANK' ? blankCount : (usedTiles[letter] || 0);
+        remainingTiles[key] = LETTER_DISTRIBUTION[letter as keyof typeof LETTER_DISTRIBUTION] - used;
+      });
+      
+      const result = await analyzeBoard({
+        board: boardForWasm,
+        rack,
+        remainingTiles,
+        dictionary: 'test' // Use test for now
+      });
+      
+      setAnalysisResults(result.moves);
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : 'Analysis failed');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [boardState, rackLetters, rackBlanks, usedTiles, blankCount]);
 
   const handleDictionaryChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDictionary(event.target.value);
@@ -203,14 +246,32 @@ export default function BoardAnalysis() {
               <Info className="info-icon" />
             </a>
           </h3>
-          <p>Enter your board state and rack letters, then click "Analyse Best Moves"</p>
+          {analysisResults ? (
+            <div className="analysis-results">
+              {analysisResults.map((move, idx) => (
+                <div key={idx} className="move-result">
+                  <div className="move-rank">{idx + 1}.</div>
+                  <div className="move-details">
+                    <span className="move-word">{move.word}</span>
+                    <span className="move-position">
+                      ({move.position.row},{move.position.col}) {move.direction}
+                    </span>
+                    <span className="move-score">{move.score} pts</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>Enter your board state and rack letters, then click "Analyse Best Moves"</p>
+          )}
+          {analysisError && <p className="error-message">{analysisError}</p>}
           <div className="analyse-button-container">
             <button 
               className="analyse-button"
               onClick={handleAnalyseClick}
-              disabled={!rackLetters.length}
+              disabled={!rackLetters.length || isAnalyzing}
             >
-              Analyse Best Moves
+              {isAnalyzing ? 'Analyzing...' : 'Analyse Best Moves'}
             </button>
           </div>
         </div>

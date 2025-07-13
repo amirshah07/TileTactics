@@ -488,3 +488,52 @@
     font-size: 0.9rem !important;
   }
 }
+.analysis-results {
+  margin-top: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.move-result {
+  display: flex;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+}
+
+.move-result:hover {
+  background-color: #f5f5f5;
+}
+
+.move-rank {
+  font-weight: bold;
+  margin-right: 1rem;
+  color: #666;
+}
+
+.move-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.move-word {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.move-position {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.move-score {
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.error-message {
+  color: #f44336;
+  margin-top: 0.5rem;
+}
