@@ -138,16 +138,11 @@ func LoadFromFile(filename string) (*GADDAG, error) {
 	scanner := bufio.NewScanner(file)
 	count := 0
 
-	fmt.Printf("Loading dictionary from %s...\n", filename)
-
 	for scanner.Scan() {
 		word := strings.TrimSpace(scanner.Text())
 		if word != "" {
 			gaddag.Add(word)
 			count++
-			if count%10000 == 0 {
-				fmt.Printf("  Loaded %d words...\n", count)
-			}
 		}
 	}
 
@@ -155,7 +150,6 @@ func LoadFromFile(filename string) (*GADDAG, error) {
 		return nil, fmt.Errorf("error reading dictionary file: %w", err)
 	}
 
-	fmt.Printf("Successfully loaded %d words\n", count)
 	return gaddag, nil
 }
 
