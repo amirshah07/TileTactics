@@ -68,13 +68,22 @@ func (b *Board) IsAnchor(row, col int) bool {
 	return false
 }
 
+// IsCompletelyEmpty returns true if the board has no tiles placed
 func (b *Board) IsCompletelyEmpty() bool {
 	for row := 0; row < game.BoardSize; row++ {
 		for col := 0; col < game.BoardSize; col++ {
-			if !b.IsEmpty(row, col) {
+			if b.tiles[row][col] != nil {
 				return false
 			}
 		}
 	}
 	return true
+}
+
+// GetMultiplier returns the multiplier at the given position
+func (b *Board) GetMultiplier(row, col int) Multiplier {
+	if row < 0 || row >= game.BoardSize || col < 0 || col >= game.BoardSize {
+		return Multiplier{Type: None, Value: 1}
+	}
+	return b.multipliers[row][col]
 }
