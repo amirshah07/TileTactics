@@ -263,8 +263,51 @@ func (g *Generator) extendAfterSeparator(
 
 // isValidCrossWord checks if placing a letter forms valid perpendicular words
 func (g *Generator) isValidCrossWord(pos anchorSquare, letter rune, dir game.Direction) bool {
-	// For now, return true - will implement cross-word validation later
-	return true
+	// Determine perpendicular direction
+	crossDir := game.Vertical
+	if dir == game.Vertical {
+		crossDir = game.Horizontal
+	}
+
+	// Check if placing this letter would form a perpendicular word
+	prevPos := g.prevPos(pos, crossDir)
+	nextPos := g.nextPos(pos, crossDir)
+
+	// If no tiles adjacent in perpendicular direction, no cross word formed
+	hasPrev := prevPos.row >= 0 && prevPos.col >= 0 && g.board.GetTile(prevPos.row, prevPos.col) != nil
+	hasNext := nextPos.row < game.BoardSize && nextPos.col < game.BoardSize && g.board.GetTile(nextPos.row, nextPos.col) != nil
+
+	if !hasPrev && !hasNext {
+		return true // No cross word formed, so valid
+	}
+
+	// Build the cross word
+	crossWord := string(letter)
+
+	// Add letters before
+	checkPos := prevPos
+	for checkPos.row >= 0 && checkPos.col >= 0 {
+		tile := g.board.GetTile(checkPos.row, checkPos.col)
+		if tile == nil {
+			break
+		}
+		crossWord = string(tile.Letter) + crossWord
+		checkPos = g.prevPos(checkPos, crossDir)
+	}
+
+	// Add letters after
+	checkPos = nextPos
+	for checkPos.row < game.BoardSize && checkPos.col < game.BoardSize {
+		tile := g.board.GetTile(checkPos.row, checkPos.col)
+		if tile == nil {
+			break
+		}
+		crossWord = crossWord + string(tile.Letter)
+		checkPos = g.nextPos(checkPos, crossDir)
+	}
+
+	// Check if cross word is valid
+	return g.gaddag.Contains(crossWord)
 }
 
 // findMoveStart finds the starting position of a move
