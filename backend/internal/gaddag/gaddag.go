@@ -9,16 +9,28 @@ import (
 
 const Separator = '>'
 
+// Node represents a node in the GADDAG
 type Node struct {
 	edges    map[rune]*Node
 	terminal bool
 }
 
+// NewNode creates a new GADDAG node
 func NewNode() *Node {
 	return &Node{
 		edges:    make(map[rune]*Node),
 		terminal: false,
 	}
+}
+
+// GetEdge returns the node connected by the given letter
+func (n *Node) GetEdge(letter rune) *Node {
+	return n.edges[letter]
+}
+
+// IsTerminal returns true if this node represents the end of a valid word
+func (n *Node) IsTerminal() bool {
+	return n.terminal
 }
 
 type GADDAG struct {
@@ -29,6 +41,10 @@ func New() *GADDAG {
 	return &GADDAG{
 		root: NewNode(),
 	}
+}
+
+func (g *GADDAG) Root() *Node {
+	return g.root
 }
 
 func (g *GADDAG) Add(word string) {
