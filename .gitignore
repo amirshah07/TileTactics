@@ -1,4 +1,4 @@
-# Frontend (Node.js, React, TypeScript, Vite)
+# Frontend 
 node_modules/
 dist/
 dist-ssr/
@@ -15,12 +15,12 @@ pnpm-debug.log*
 coverage/
 .vite/
 
-# TypeScript specific
+# TypeScript 
 *.tsbuildinfo
 .npm
 .pnpm
 
-# Backend (Go)
+# Backend 
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -31,10 +31,12 @@ coverage/
 
 # Go test and build artifacts
 *.test
-/bin/
-/pkg/
-/vendor/
+backend/bin/
+backend/pkg/
+backend/vendor/
 .go-cache/
+backend/coverage.out
+backend/coverage.html
 
 # Go workspace file
 go.work
@@ -69,12 +71,11 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
-# WASM build output
-*.wasm
-frontend/public/scrabble.wasm
+# WASM build output 
+frontend/public/tiletactics.wasm
 frontend/public/wasm_exec.js
 
-# Compressed dictionaries (build artifacts)
+# Compressed dictionaries 
 frontend/public/dictionaries/*.gz
 frontend/public/dictionaries/*.json
 
