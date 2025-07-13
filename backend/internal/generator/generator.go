@@ -1,9 +1,11 @@
 package generator
 
 import (
+	"sort"
 	"tiletactics/backend/internal/board"
 	"tiletactics/backend/internal/gaddag"
 	"tiletactics/backend/internal/game"
+	"tiletactics/backend/internal/scorer"
 )
 
 type Generator struct {
@@ -36,7 +38,21 @@ func (g *Generator) GenerateMoves(rack []game.Tile) []game.Move {
 		moves = append(moves, verticalMoves...)
 	}
 
-	return g.removeDuplicates(moves)
+	// Remove duplicates and invalid words
+	moves = g.removeDuplicates(moves)
+
+	// Score all moves
+	sc := scorer.New(g.board)
+	for i := range moves {
+		moves[i].Score = sc.ScoreMove(moves[i])
+	}
+
+	// Sort by score (highest first)
+	sort.Slice(moves, func(i, j int) bool {
+		return moves[i].Score > moves[j].Score
+	})
+
+	return moves
 }
 
 type anchorSquare struct {
@@ -148,7 +164,7 @@ func (g *Generator) findWordStart(anchor anchorSquare, dir game.Direction) ancho
 	return pos
 }
 
-func (g *Generator) generateMovesFromPosition(start, anchor anchorSquare, rackMap map[rune]int, blanks int, dir game.Direction) []game.Move {
+func (g *Generator) generateMovesFromPosition(start, _ anchorSquare, rackMap map[rune]int, blanks int, dir game.Direction) []game.Move {
 	var moves []game.Move
 
 	// Start GADDAG traversal from root
@@ -179,13 +195,6 @@ func (g *Generator) prevPos(pos anchorSquare, dir game.Direction) anchorSquare {
 		return anchorSquare{pos.row, pos.col - 1}
 	}
 	return anchorSquare{pos.row - 1, pos.col}
-}
-
-func (g *Generator) distanceToAnchor(from, to anchorSquare, dir game.Direction) int {
-	if dir == game.Horizontal {
-		return to.col - from.col
-	}
-	return to.row - from.row
 }
 
 func (g *Generator) removeDuplicates(moves []game.Move) []game.Move {
