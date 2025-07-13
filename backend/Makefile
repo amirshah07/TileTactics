@@ -47,3 +47,22 @@ quick-test:
 # Benchmark tests
 bench:
 	go test -bench=. -benchmem ./...
+
+# Build WASM
+wasm:
+	GOOS=js GOARCH=wasm go build -o ../frontend/public/tiletactics.wasm cmd/wasm/main.go
+	cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" ../frontend/public/
+
+# Build WASM with optimization
+wasm-prod:
+	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o ../frontend/public/tiletactics.wasm cmd/wasm/main.go
+	cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" ../frontend/public/
+
+# Copy test dictionary to frontend
+copy-dict:
+	mkdir -p ../frontend/public/dictionaries
+	cp dictionaries/test_dict.txt ../frontend/public/dictionaries/
+
+# Full WASM setup
+wasm-setup: wasm copy-dict
+	@echo "WASM build complete! Files copied to frontend/public/"
