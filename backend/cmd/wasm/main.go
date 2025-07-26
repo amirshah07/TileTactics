@@ -188,9 +188,9 @@ func getGaddag(dictionary string) (*gaddag.GADDAG, error) {
 	var filename string
 	switch dictionary {
 	case "csw24":
-		filename = "csw24.txt"
+		filename = "CSW24.txt"
 	case "nwl2023":
-		filename = "nwl2023.txt"
+		filename = "NWL2023.txt"
 	default:
 		return nil, fmt.Errorf("unknown dictionary: %s", dictionary)
 	}
@@ -215,7 +215,7 @@ func getGaddag(dictionary string) (*gaddag.GADDAG, error) {
 	for _, word := range words {
 		word = strings.TrimSpace(word)
 		if word != "" {
-			g.Add(word)
+			g.Add(strings.ToUpper(word)) // Ensure uppercase
 		}
 	}
 
