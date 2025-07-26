@@ -14,7 +14,7 @@ export default function BoardAnalysis() {
   const [rackLetters, setRackLetters] = useState<string[]>([]);
   const [rackBlanks, setRackBlanks] = useState<boolean[]>([]);
   const [activeComponent, setActiveComponent] = useState<'board' | 'rack' | null>(null);
-  const [selectedDictionary, setSelectedDictionary] = useState<string>('csw24');
+  const [selectedDictionary, setSelectedDictionary] = useState<string>('nwl2023');
   const boardRef = useRef<HTMLDivElement>(null);
   const [shouldClearFocus, setShouldClearFocus] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<MoveResult[] | null>(null);
@@ -132,22 +132,70 @@ export default function BoardAnalysis() {
     setAnalysisError(null);
     
     try {
+      // Debug: Log board state to check blank tiles
+      console.log('Board state:', boardState);
+      if (boardState) {
+        boardState.forEach((row, rowIdx) => {
+          row.forEach((cell, colIdx) => {
+            if (cell?.isBlank) {
+              console.log(`Blank at ${rowIdx},${colIdx}:`, cell);
+            }
+          });
+        });
+      }
+      
       // Convert board to WASM format
       const board = boardState || Array(15).fill(null).map(() => Array(15).fill(null));
       const boardForWasm = board.map(row => 
-        row.map(cell => cell ? {
-          letter: cell.letter.toUpperCase(),
-          value: LETTER_VALUES[cell.letter.toUpperCase()] || 0,
-          isBlank: cell.isBlank
-        } : null)
+        row.map(cell => {
+          if (!cell) return null;
+          
+          // Ensure letter exists and is not empty
+          let letter = cell.letter?.toUpperCase() || '';
+          
+          // Handle edge cases for empty/invalid letters
+          if (!letter || letter === '*') {
+            // If it's a blank with no letter, skip this tile
+            if (cell.isBlank) {
+              console.warn('Blank tile with no letter found, skipping');
+              return null;
+            }
+            // For non-blanks, this is an error
+            console.error('Non-blank tile with invalid letter:', cell);
+            return null;
+          }
+          
+          return {
+            letter: letter,
+            value: cell.isBlank ? 0 : (LETTER_VALUES[letter] || 0),
+            isBlank: cell.isBlank
+          };
+        })
       );
       
-      // Convert rack to WASM format
-      const rack = rackLetters.map((letter, idx) => ({
-        letter: letter.toUpperCase(),
-        value: LETTER_VALUES[letter.toUpperCase()] || 0,
-        isBlank: rackBlanks[idx]
-      }));
+      // Convert rack to WASM format - handle blanks properly
+      const rack = rackLetters
+        .map((letter, idx) => {
+          if (rackBlanks[idx]) {
+            // Blank tiles in rack should be represented as '?'
+            return {
+              letter: '?',
+              value: 0,
+              isBlank: true
+            };
+          }
+          
+          const letterUpper = letter?.toUpperCase() || '';
+          // Skip empty non-blank slots
+          if (!letterUpper) return null;
+          
+          return {
+            letter: letterUpper,
+            value: LETTER_VALUES[letterUpper] || 0,
+            isBlank: false
+          };
+        })
+        .filter(tile => tile !== null);
       
       // Calculate remaining tiles
       const remainingTiles: Record<string, number> = {};
@@ -161,7 +209,7 @@ export default function BoardAnalysis() {
         board: boardForWasm,
         rack,
         remainingTiles,
-        dictionary: 'test' // Use test for now
+        dictionary: selectedDictionary // Use selected dictionary
       });
       
       setAnalysisResults(result.moves);
@@ -174,6 +222,9 @@ export default function BoardAnalysis() {
 
   const handleDictionaryChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDictionary(event.target.value);
+    // Clear analysis results when dictionary changes
+    setAnalysisResults(null);
+    setAnalysisError(null);
   }, []);
 
   return (
@@ -187,8 +238,8 @@ export default function BoardAnalysis() {
               value={selectedDictionary}
               onChange={handleDictionaryChange}
             >
-              <option value="csw24">CSW24 (Collins Scrabble Words)</option>
               <option value="nwl2023">NWL2023 (NASPA Word List)</option>
+              <option value="csw24">CSW24 (Collins Scrabble Words)</option>
             </select>
             <div className="select-arrow"></div>
           </div>
@@ -252,11 +303,30 @@ export default function BoardAnalysis() {
                 <div key={idx} className="move-result">
                   <div className="move-rank">{idx + 1}.</div>
                   <div className="move-details">
-                    <span className="move-word">{move.word}</span>
-                    <span className="move-position">
-                      ({move.position.row},{move.position.col}) {move.direction}
-                    </span>
-                    <span className="move-score">{move.score} pts</span>
+                    <div className="move-main-info">
+                      <span className="move-word">{move.word}</span>
+                      <span className="move-position">
+                        {move.position.row + 1}{String.fromCharCode(65 + move.position.col)} 
+                        {move.direction === 'H' ? ' horizontal' : ' vertical'}
+                      </span>
+                    </div>
+                    <div className="move-sub-info">
+                      <span className="move-score">{move.score} pts</span>
+                      {move.tilesPlaced && (
+                        <span className="move-tiles-used">
+                          ({move.tilesPlaced.map(tp => 
+                            tp.tile.isBlank ? tp.tile.letter.toLowerCase() : tp.tile.letter
+                          ).join('')})
+                        </span>
+                      )}
+                      {move.leave && move.leave.length > 0 && (
+                        <span className="move-leave">
+                          Leave: {move.leave.map(t => 
+                            t.isBlank ? '?' : t.letter
+                          ).join('')}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
