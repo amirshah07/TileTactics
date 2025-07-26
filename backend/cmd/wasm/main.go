@@ -6,6 +6,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"syscall/js"
 	"tiletactics/backend/internal/board"
 	"tiletactics/backend/internal/evaluator"
@@ -177,25 +178,45 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 	return string(responseJSON)
 }
 
-// Embedded test dictionary
-var testDictWords = []string{
-	"CAT", "CATS", "CAR", "CART", "SCAT",
-	"AT", "ATE", "TAR", "RAT", "SAT",
-	"TEA", "EAT", "ETA", "ART", "SET",
-	"SEAT", "STAR", "RATS", "ARTS", "SCAR",
-	"AS", "IS",
-}
-
 // getGaddag loads or retrieves cached GADDAG
 func getGaddag(dictionary string) (*gaddag.GADDAG, error) {
 	if g, exists := gaddagCache[dictionary]; exists {
 		return g, nil
 	}
 
-	// Create new GADDAG and add words
+	// Map dictionary name to filename
+	var filename string
+	switch dictionary {
+	case "csw24":
+		filename = "csw24.txt"
+	case "nwl2023":
+		filename = "nwl2023.txt"
+	default:
+		return nil, fmt.Errorf("unknown dictionary: %s", dictionary)
+	}
+
+	// Fetch dictionary via HTTP
+	url := "/dictionaries/" + filename
+
+	// Use XMLHttpRequest for synchronous fetch
+	xhr := js.Global().Get("XMLHttpRequest").New()
+	xhr.Call("open", "GET", url, false) // false = synchronous
+	xhr.Call("send")
+
+	if xhr.Get("status").Int() != 200 {
+		return nil, fmt.Errorf("failed to fetch dictionary: status %d", xhr.Get("status").Int())
+	}
+
+	text := xhr.Get("responseText").String()
+	words := strings.Split(strings.TrimSpace(text), "\n")
+
+	// Build GADDAG
 	g := gaddag.New()
-	for _, word := range testDictWords {
-		g.Add(word)
+	for _, word := range words {
+		word = strings.TrimSpace(word)
+		if word != "" {
+			g.Add(word)
+		}
 	}
 
 	// Cache it

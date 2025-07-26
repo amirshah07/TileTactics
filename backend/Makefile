@@ -58,10 +58,10 @@ wasm-prod:
 	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o ../frontend/public/tiletactics.wasm cmd/wasm/main.go
 	cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" ../frontend/public/
 
-# Copy test dictionary to frontend
+# Copy all dictionaries to frontend
 copy-dict:
 	mkdir -p ../frontend/public/dictionaries
-	cp dictionaries/test_dict.txt ../frontend/public/dictionaries/
+	cp dictionaries/*.txt ../frontend/public/dictionaries/
 
 # Full WASM setup
 wasm-setup: wasm copy-dict
