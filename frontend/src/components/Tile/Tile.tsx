@@ -8,10 +8,11 @@ interface TileProps {
   position: { row: number; col: number };
   isSelected: boolean;
   isBlank: boolean;
+  isPreview?: boolean;
   onClick: (row: number, col: number) => void;
 }
 
-const Tile = ({ letter, multiplier, position, isSelected, isBlank, onClick }: TileProps) => {
+const Tile = ({ letter, multiplier, position, isSelected, isBlank, isPreview = false, onClick }: TileProps) => {
   const { row, col } = position;
   
   const handleClick = () => {
@@ -29,17 +30,25 @@ const Tile = ({ letter, multiplier, position, isSelected, isBlank, onClick }: Ti
     }
   };
 
+  // Build className string
+  const classNames = [
+    'tile',
+    isSelected && 'selected',
+    letter && 'has-letter',
+    isBlank && 'is-blank',
+    isPreview && 'preview'
+  ].filter(Boolean).join(' ');
+
   return (
     <div 
-      className={`tile ${isSelected ? 'selected' : ''} ${letter ? 'has-letter' : ''} ${isBlank ? 'is-blank' : ''}`}
+      className={classNames}
       data-multiplier={multiplier}
       onClick={handleClick}
     >
       {letter ? (
         <div className="letter-content">
           <span className="letter">{letter.toUpperCase()}</span>
-          {!isBlank && <span className="points">{LETTER_VALUES[letter.toUpperCase()]}</span>}
-          {isBlank && <span className="points">0</span>}
+          <span className="points">{isBlank ? 0 : LETTER_VALUES[letter.toUpperCase()]}</span>
         </div>
       ) : (
         <span className={`multiplier-label ${multiplier === 'STAR' ? 'star-label' : ''}`}>

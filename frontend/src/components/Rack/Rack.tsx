@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Trash2 } from 'lucide-react';
 import { MAX_RACK_SIZE, LETTER_VALUES, LETTER_DISTRIBUTION } from '../../utils/constants';
 import { useNoMoreTilesToast } from '../NoMoreTilesToast/useNoMoreTilesToast';
+import type { MoveResult } from '../../utils/wasmLoader';
 import './Rack.css';
 
 interface RackProps {
@@ -10,6 +11,9 @@ interface RackProps {
   blankCount: number;
   isActive: boolean;
   onFocus: () => void;
+  hoveredMove?: MoveResult | null;
+  currentRackLetters?: string[];
+  currentRackBlanks?: boolean[];
 }
 
 interface RackTile {
@@ -17,7 +21,7 @@ interface RackTile {
   isBlank: boolean;
 }
 
-const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackProps) => {
+const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus, hoveredMove, currentRackLetters, currentRackBlanks }: RackProps) => {
   const [rackTiles, setRackTiles] = useState<RackTile[]>(
     Array(MAX_RACK_SIZE).fill(null).map(() => ({ letter: '', isBlank: false }))
   );
@@ -26,6 +30,38 @@ const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackPr
   const { showNoMoreTilesError } = useNoMoreTilesToast();
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]); 
+
+  // Calculate which rack tiles are being used in the hovered move
+  const usedInHoveredMove = useCallback((tile: RackTile, index: number): boolean => {
+    if (!hoveredMove || (!tile.letter && !tile.isBlank)) return false;
+    
+    // Create a map of used tiles from the hovered move
+    const usedTilesMap = new Map<string, number>();
+    hoveredMove.tilesPlaced.forEach(tp => {
+      const key = tp.tile.isBlank ? '?-true' : `${tp.tile.letter}-false`;
+      usedTilesMap.set(key, (usedTilesMap.get(key) || 0) + 1);
+    });
+    
+    // Check if this rack tile matches any used tiles
+    const tileKey = tile.isBlank ? '?-true' : `${tile.letter}-false`;
+    const usedCount = usedTilesMap.get(tileKey) || 0;
+    
+    if (usedCount > 0) {
+      // Count how many tiles of this type we've already marked as used
+      let seenCount = 0;
+      for (let i = 0; i < index; i++) {
+        const otherTile = rackTiles[i];
+        if (tile.isBlank && otherTile.isBlank) {
+          seenCount++;
+        } else if (!tile.isBlank && otherTile.letter === tile.letter && !otherTile.isBlank) {
+          seenCount++;
+        }
+      }
+      return seenCount < usedCount;
+    }
+    
+    return false;
+  }, [hoveredMove, rackTiles]);
 
   useEffect(() => {
     const letters = rackTiles
@@ -36,6 +72,31 @@ const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackPr
       .map(tile => tile.isBlank);
     onRackChange(letters, blanks); 
   }, [rackTiles, onRackChange]);
+
+  // Sync with parent state when tiles are removed
+  useEffect(() => {
+    if (currentRackLetters && currentRackBlanks) {
+      // Only update if there's actually a difference
+      const needsUpdate = currentRackLetters.some((letter, index) => {
+        const currentTile = rackTiles[index];
+        if (!currentTile) return true;
+        return currentTile.letter !== letter || currentTile.isBlank !== currentRackBlanks[index];
+      }) || currentRackLetters.length !== rackTiles.filter(t => t.letter || t.isBlank).length;
+
+      if (needsUpdate) {
+        const newRackTiles = Array(MAX_RACK_SIZE).fill(null).map((_, index) => {
+          if (index < currentRackLetters.length) {
+            return {
+              letter: currentRackLetters[index],
+              isBlank: currentRackBlanks[index]
+            };
+          }
+          return { letter: '', isBlank: false };
+        });
+        setRackTiles(newRackTiles);
+      }
+    }
+  }, [currentRackLetters, currentRackBlanks]); // Removed rackTiles from dependencies
 
   useEffect(() => {
     if (!isActive) {
@@ -191,7 +252,7 @@ const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackPr
       }, 0);
       return;
     }
-  }, [rackTiles, canAddLetter, advanceToNextTile, showNoMoreTilesError]);
+  }, [rackTiles, canAddLetter, advanceToNextTile, showNoMoreTilesError, usedTiles]);
 
   useEffect(() => {
     if (isActive && focused !== null) {
@@ -218,10 +279,11 @@ const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackPr
         <div className="rack">
           {Array(MAX_RACK_SIZE).fill(null).map((_, index) => {
             const tile = rackTiles[index] || { letter: '', isBlank: false };
+            const isUsedInMove = usedInHoveredMove(tile, index);
             return (
               <div 
                 key={`rack-${index}`} 
-                className={`rack-tile ${(tile.letter !== '' || tile.isBlank) ? 'has-letter' : ''} ${tile.isBlank ? 'is-blank' : ''} ${focused === index ? 'selected' : ''}`}
+                className={`rack-tile ${(tile.letter !== '' || tile.isBlank) ? 'has-letter' : ''} ${tile.isBlank ? 'is-blank' : ''} ${focused === index ? 'selected' : ''} ${isUsedInMove ? 'preview-used' : ''}`}
                 onClick={() => tile.isBlank && handleBlankTileClick(index)}
               >
                 <input
@@ -232,6 +294,7 @@ const Rack = ({ onRackChange, usedTiles, blankCount, isActive, onFocus }: RackPr
                   type="text"
                   maxLength={1}
                   value={tile.isBlank ? '' : tile.letter}
+                  autoComplete="off"
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   onFocus={() => handleInputFocus(index)}

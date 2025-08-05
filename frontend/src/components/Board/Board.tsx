@@ -5,6 +5,7 @@ import BlankTileModal from '../BlankTileModal/BlankTileModal';
 import { BOARD_LAYOUT, BOARD_SIZE, LETTER_DISTRIBUTION } from '../../utils/constants';
 import { useNoMoreTilesToast } from '../NoMoreTilesToast/useNoMoreTilesToast';
 import type { BoardState, BoardPosition, MultiplierType } from '../../utils/types';
+import type { MoveResult } from '../../utils/wasmLoader';
 import './Board.css';
 
 interface BoardProps {
@@ -14,9 +15,10 @@ interface BoardProps {
   isActive: boolean;
   onFocus: () => void;
   clearFocus?: boolean;
+  hoveredMove?: MoveResult | null;
 }
 
-const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearFocus = false }: BoardProps) => {
+const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearFocus = false, hoveredMove }: BoardProps) => {
   // Initialize empty board
   const initializeBoard = (): BoardState => {
     return Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
@@ -28,6 +30,14 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
   const [isShiftPressedForBlank, setIsShiftPressedForBlank] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const { showNoMoreTilesError } = useNoMoreTilesToast();
+
+  // Calculate preview positions from hovered move
+  const previewPositions = hoveredMove?.tilesPlaced?.map(tp => ({
+    row: tp.position.row,
+    col: tp.position.col,
+    letter: tp.tile.letter,
+    isBlank: tp.tile.isBlank
+  })) || [];
 
   // Handle click on a board square
   const handleTileClick = (row: number, col: number) => {
@@ -179,6 +189,11 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
     setShowClearConfirm(true);
   };
 
+  // Check if a position has a preview tile
+  const getPreviewTile = (row: number, col: number) => {
+    return previewPositions.find(p => p.row === row && p.col === col);
+  };
+
   return (
     <div className="board-wrapper" onClick={onFocus}>
       <div className="board-container">
@@ -209,15 +224,18 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
                 {row.map((squareContent, colIndex) => {
                   const multiplier: MultiplierType = BOARD_LAYOUT[rowIndex][colIndex];
                   const isSelected = isActive && selectedPosition?.row === rowIndex && selectedPosition?.col === colIndex;
+                  const previewTile = getPreviewTile(rowIndex, colIndex);
+                  const isPreview = !squareContent && !!previewTile;
                   
                   return (
                     <Tile
                       key={`tile-${rowIndex}-${colIndex}`}
-                      letter={squareContent?.letter || ''}
+                      letter={squareContent?.letter || previewTile?.letter || ''}
                       multiplier={multiplier}
                       position={{ row: rowIndex, col: colIndex }}
                       isSelected={isSelected}
-                      isBlank={squareContent?.isBlank || false}
+                      isBlank={squareContent?.isBlank || previewTile?.isBlank || false}
+                      isPreview={!!isPreview}
                       onClick={handleTileClick}
                     />
                   );

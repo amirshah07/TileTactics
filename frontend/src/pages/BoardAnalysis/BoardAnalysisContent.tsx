@@ -10,6 +10,10 @@ import { analyzeBoard, type MoveResult } from '../../utils/wasmLoader';
 import { LETTER_VALUES, LETTER_DISTRIBUTION } from '../../utils/constants';
 
 export default function BoardAnalysis() {
+  const initializeBoard = (): BoardState => {
+    return Array(15).fill(null).map(() => Array(15).fill(null));
+  };
+
   const [boardState, setBoardState] = useState<BoardState | null>(null);
   const [rackLetters, setRackLetters] = useState<string[]>([]);
   const [rackBlanks, setRackBlanks] = useState<boolean[]>([]);
@@ -20,8 +24,9 @@ export default function BoardAnalysis() {
   const [analysisResults, setAnalysisResults] = useState<MoveResult[] | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [hoveredMove, setHoveredMove] = useState<MoveResult | null>(null);
   
-  // Tile counting 
+  // Tile counting calculation
   const { usedTiles, blankCount } = useMemo(() => {
     const tiles: Record<string, number> = {};
     let blanks = 0;
@@ -109,7 +114,7 @@ export default function BoardAnalysis() {
     }));
   }, [rackLetters, rackBlanks]);
 
-  // Use useCallback to prevent unnecessary rerenders
+  // Prevents unnecessary rerenders
   const handleRackChange = useCallback((letters: string[], blanks: boolean[]) => {
     setRackLetters(letters);
     setRackBlanks(blanks);
@@ -127,41 +132,79 @@ export default function BoardAnalysis() {
     setActiveComponent('rack');
   }, []);
 
+  const handleMoveClick = useCallback((move: MoveResult) => {
+    // Places the move on the board
+    const newBoardState = [...(boardState || initializeBoard())];
+    
+    move.tilesPlaced.forEach(tp => {
+      newBoardState[tp.position.row][tp.position.col] = {
+        letter: tp.tile.letter,
+        isBlank: tp.tile.isBlank
+      };
+    });
+    
+    setBoardState(newBoardState);
+    
+    // Updates rack - removes used tiles
+    const usedTiles = move.tilesPlaced.map(tp => ({
+      letter: tp.tile.letter,
+      isBlank: tp.tile.isBlank
+    }));
+    
+    const newRackLetters = [...rackLetters];
+    const newRackBlanks = [...rackBlanks];
+    
+    // Removes used tiles from rack
+    usedTiles.forEach(used => {
+      let index = -1;
+      
+      if (used.isBlank) {
+        // For blanks, finds any blank tile (empty letter with isBlank true)
+        index = newRackLetters.findIndex((_, idx) => 
+          newRackBlanks[idx] === true
+        );
+      } else {
+        // For regular tiles, matches letter and ensures not a blank
+        index = newRackLetters.findIndex((letter, idx) => 
+          letter === used.letter && newRackBlanks[idx] === false
+        );
+      }
+      
+      if (index !== -1) {
+        newRackLetters.splice(index, 1);
+        newRackBlanks.splice(index, 1);
+      }
+    });
+    
+    setRackLetters(newRackLetters);
+    setRackBlanks(newRackBlanks);
+    
+    // Clears analysis results after placing
+    setAnalysisResults(null);
+    setHoveredMove(null);
+  }, [boardState, rackLetters, rackBlanks]);
+
   const handleAnalyseClick = useCallback(async () => {
     setIsAnalyzing(true);
     setAnalysisError(null);
     
     try {
-      // Debug: Log board state to check blank tiles
-      console.log('Board state:', boardState);
-      if (boardState) {
-        boardState.forEach((row, rowIdx) => {
-          row.forEach((cell, colIdx) => {
-            if (cell?.isBlank) {
-              console.log(`Blank at ${rowIdx},${colIdx}:`, cell);
-            }
-          });
-        });
-      }
-      
-      // Convert board to WASM format
+      // Converts board to WASM format
       const board = boardState || Array(15).fill(null).map(() => Array(15).fill(null));
       const boardForWasm = board.map(row => 
         row.map(cell => {
           if (!cell) return null;
           
-          // Ensure letter exists and is not empty
+          // Ensures letter exists and is not empty
           let letter = cell.letter?.toUpperCase() || '';
           
-          // Handle edge cases for empty/invalid letters
+          // Handles edge cases for empty/invalid letters
           if (!letter || letter === '*') {
-            // If it's a blank with no letter, skip this tile
+            // Skips blank tiles with no letter
             if (cell.isBlank) {
-              console.warn('Blank tile with no letter found, skipping');
               return null;
             }
-            // For non-blanks, this is an error
-            console.error('Non-blank tile with invalid letter:', cell);
+            // Non-blanks with invalid letters are errors
             return null;
           }
           
@@ -173,11 +216,11 @@ export default function BoardAnalysis() {
         })
       );
       
-      // Convert rack to WASM format - handle blanks properly
+      // Converts rack to WASM format - handles blanks properly
       const rack = rackLetters
         .map((letter, idx) => {
           if (rackBlanks[idx]) {
-            // Blank tiles in rack should be represented as '?'
+            // Blank tiles in rack represented as '?'
             return {
               letter: '?',
               value: 0,
@@ -186,7 +229,7 @@ export default function BoardAnalysis() {
           }
           
           const letterUpper = letter?.toUpperCase() || '';
-          // Skip empty non-blank slots
+          // Skips empty non-blank slots
           if (!letterUpper) return null;
           
           return {
@@ -197,7 +240,7 @@ export default function BoardAnalysis() {
         })
         .filter(tile => tile !== null);
       
-      // Calculate remaining tiles
+      // Calculates remaining tiles
       const remainingTiles: Record<string, number> = {};
       Object.keys(LETTER_DISTRIBUTION).forEach(letter => {
         const key = letter === 'BLANK' ? '?' : letter;
@@ -209,7 +252,7 @@ export default function BoardAnalysis() {
         board: boardForWasm,
         rack,
         remainingTiles,
-        dictionary: selectedDictionary // Use selected dictionary
+        dictionary: selectedDictionary // Uses selected dictionary
       });
       
       setAnalysisResults(result.moves);
@@ -218,11 +261,11 @@ export default function BoardAnalysis() {
     } finally {
       setIsAnalyzing(false);
     }
-  }, [boardState, rackLetters, rackBlanks, usedTiles, blankCount]);
+  }, [boardState, rackLetters, rackBlanks, usedTiles, blankCount, selectedDictionary]);
 
   const handleDictionaryChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDictionary(event.target.value);
-    // Clear analysis results when dictionary changes
+    // Clears analysis results when dictionary changes
     setAnalysisResults(null);
     setAnalysisError(null);
   }, []);
@@ -270,6 +313,7 @@ export default function BoardAnalysis() {
                 isActive={activeComponent === 'board'}
                 onFocus={handleBoardFocus}
                 clearFocus={shouldClearFocus}
+                hoveredMove={hoveredMove}
               />
             </div>
             <Rack 
@@ -278,6 +322,9 @@ export default function BoardAnalysis() {
               blankCount={blankCount}
               isActive={activeComponent === 'rack'}
               onFocus={handleRackFocus}
+              hoveredMove={hoveredMove}
+              currentRackLetters={rackLetters}
+              currentRackBlanks={rackBlanks}
             />
           </div>
         </NoMoreTilesToastProvider>
@@ -300,32 +347,22 @@ export default function BoardAnalysis() {
           {analysisResults ? (
             <div className="analysis-results">
               {analysisResults.map((move, idx) => (
-                <div key={idx} className="move-result">
-                  <div className="move-rank">{idx + 1}.</div>
+                <div 
+                  key={idx} 
+                  className="move-result"
+                  onMouseEnter={() => setHoveredMove(move)}
+                  onMouseLeave={() => setHoveredMove(null)}
+                  onClick={() => handleMoveClick(move)}
+                >
+                  <div className="move-rank">
+                    <span className="rank-number">{idx + 1}</span>
+                    <div className="rank-indicator"></div>
+                  </div>
                   <div className="move-details">
-                    <div className="move-main-info">
-                      <span className="move-word">{move.word}</span>
-                      <span className="move-position">
-                        {move.position.row + 1}{String.fromCharCode(65 + move.position.col)} 
-                        {move.direction === 'H' ? ' horizontal' : ' vertical'}
-                      </span>
-                    </div>
-                    <div className="move-sub-info">
-                      <span className="move-score">{move.score} pts</span>
-                      {move.tilesPlaced && (
-                        <span className="move-tiles-used">
-                          ({move.tilesPlaced.map(tp => 
-                            tp.tile.isBlank ? tp.tile.letter.toLowerCase() : tp.tile.letter
-                          ).join('')})
-                        </span>
-                      )}
-                      {move.leave && move.leave.length > 0 && (
-                        <span className="move-leave">
-                          Leave: {move.leave.map(t => 
-                            t.isBlank ? '?' : t.letter
-                          ).join('')}
-                        </span>
-                      )}
+                    <span className="move-word">{move.word}</span>
+                    <div className="move-score">
+                      <span className="score-value">{move.score}</span>
+                      <span className="score-label">pts</span>
                     </div>
                   </div>
                 </div>

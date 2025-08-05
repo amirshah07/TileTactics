@@ -222,6 +222,19 @@
   background-color: var(--danger-hover);
 }
 
+.rack-tile.preview-used {
+  opacity: 0.3;
+  transform: scale(0.95);
+}
+
+.rack-tile.preview-used input {
+  color: #999;
+}
+
+.rack-tile.preview-used .points {
+  opacity: 0.5;
+}
+
 @media (max-width: 768px) and (min-width: 581px) {
   .rack-container {
     margin-top: 15px;
