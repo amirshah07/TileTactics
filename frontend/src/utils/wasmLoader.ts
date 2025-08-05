@@ -40,7 +40,6 @@ async function loadWasmInternal(): Promise<void> {
     }
     
     wasmReady = true;
-    console.log('WASM loaded successfully');
   } catch (error) {
     console.error('Failed to load WASM:', error);
     throw error;
