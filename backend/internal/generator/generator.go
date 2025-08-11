@@ -38,7 +38,7 @@ func (g *Generator) GenerateMoves(rack []game.Tile) []game.Move {
 		moves = append(moves, verticalMoves...)
 	}
 
-	// Remove duplicates and invalid words
+	// Remove duplicates and invalid words (including checking perpendicular words)
 	moves = g.removeDuplicates(moves)
 
 	// Score all moves
@@ -197,14 +197,92 @@ func (g *Generator) prevPos(pos anchorSquare, dir game.Direction) anchorSquare {
 	return anchorSquare{pos.row - 1, pos.col}
 }
 
+// getPerpendicularWord gets the perpendicular word formed at a position
+func (g *Generator) getPerpendicularWord(row, col int, placedTile *game.Tile, dir game.Direction) string {
+	// Determine perpendicular direction
+	perpDir := game.Vertical
+	if dir == game.Vertical {
+		perpDir = game.Horizontal
+	}
+
+	// Find start of perpendicular word
+	startRow, startCol := row, col
+	if perpDir == game.Horizontal {
+		// Move left to find start
+		for startCol > 0 && g.board.GetTile(startRow, startCol-1) != nil {
+			startCol--
+		}
+	} else {
+		// Move up to find start
+		for startRow > 0 && g.board.GetTile(startRow-1, startCol) != nil {
+			startRow--
+		}
+	}
+
+	// Build the perpendicular word
+	word := ""
+	r, c := startRow, startCol
+	for r < game.BoardSize && c < game.BoardSize {
+		var tile *game.Tile
+		if r == row && c == col {
+			// This is where we're placing the new tile
+			tile = placedTile
+		} else {
+			tile = g.board.GetTile(r, c)
+		}
+
+		if tile == nil {
+			break
+		}
+
+		// Add letter to word - blanks already have their designated letter stored in the Letter field
+		word += string(tile.Letter)
+
+		// Move to next position
+		if perpDir == game.Horizontal {
+			c++
+		} else {
+			r++
+		}
+	}
+
+	return word
+}
+
+// validatePerpendicularWords checks if all perpendicular words formed by a move are valid
+func (g *Generator) validatePerpendicularWords(move game.Move) bool {
+	for _, placedTile := range move.TilesPlaced {
+		// Get the perpendicular word formed at this position
+		perpWord := g.getPerpendicularWord(
+			placedTile.Position.Row,
+			placedTile.Position.Col,
+			&placedTile.Tile,
+			move.Direction,
+		)
+
+		// If a perpendicular word is formed (length > 1), validate it
+		if len(perpWord) > 1 {
+			if !g.gaddag.Contains(perpWord) {
+				return false // Invalid perpendicular word
+			}
+		}
+	}
+	return true
+}
+
 func (g *Generator) removeDuplicates(moves []game.Move) []game.Move {
 	seen := make(map[string]bool)
 	var unique []game.Move
 
 	for _, move := range moves {
-		// Validate that the word is actually in the dictionary
+		// Validate that the main word is in the dictionary
 		if !g.gaddag.Contains(move.Word) {
-			continue // Skip invalid words
+			continue // Skip invalid main words
+		}
+
+		// Validate all perpendicular words
+		if !g.validatePerpendicularWords(move) {
+			continue // Skip moves that form invalid perpendicular words
 		}
 
 		// Create a unique key for each move
