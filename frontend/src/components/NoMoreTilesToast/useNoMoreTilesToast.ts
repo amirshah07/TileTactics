@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { NoMoreTilesToastContext } from './NoMoreTilesToastContextTypes.ts';
-import type { NoMoreTilesToastContextProps } from './NoMoreTilesToastContextTypes.ts';
+import { NoMoreTilesToastContext } from './NoMoreTilesToastContextTypes';
+import type { NoMoreTilesToastContextProps } from './NoMoreTilesToastContextTypes';
 
 export function useNoMoreTilesToast(): NoMoreTilesToastContextProps {
   const context = useContext(NoMoreTilesToastContext);

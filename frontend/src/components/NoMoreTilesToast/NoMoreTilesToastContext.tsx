@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { NoMoreTilesToastContext } from './NoMoreTilesToastContextTypes.ts';
+import { NoMoreTilesToastContext } from './NoMoreTilesToastContextTypes';
 import NoMoreTilesToast from './NoMoreTilesToast';
 
 interface Toast {

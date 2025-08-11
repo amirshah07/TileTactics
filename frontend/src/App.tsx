@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Homepage from './pages/Homepage/Homepage';
-import BoardAnalysis from './pages/BoardAnalysis/BoardAnalysisContent';
+import BoardAnalysis from './pages/BoardAnalysis/BoardAnalysis';
 import VsAI from './pages/vsAI/VsAI';
 import WordFinder from './pages/WordFinder/WordFinder';
 import BestMovesExplanation from './pages/BestMovesExplanation/BestMovesExplanation';
