@@ -1,11 +1,12 @@
-import './VsAI.css';
+import { NoMoreTilesToastProvider } from '../../components/NoMoreTilesToast/NoMoreTilesToastContext';
+import VsAIContent from './vsAIContent';
 
-export default function VsAI() {
+const VsAI = () => {
   return (
-    <div className="vs-ai-container">
-      <h1>vs TileTacticsAI: The Ultimate Challenge</h1>
-      <p>This is the AI opponent page.</p>
-      {/* AI game content will go here */}
-    </div>
+    <NoMoreTilesToastProvider>
+      <VsAIContent />
+    </NoMoreTilesToastProvider>
   );
-}
+};
+
+export default VsAI;
