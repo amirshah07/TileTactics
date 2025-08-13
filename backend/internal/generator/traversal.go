@@ -20,14 +20,35 @@ func (g *Generator) extendRight(
 	// Check if current position is out of bounds
 	if pos.row >= game.BoardSize || pos.col >= game.BoardSize {
 		// Check if we can terminate here
-		if anchorSeen && node.IsTerminal() && len(tilesPlaced) > 0 {
-			move := game.Move{
-				Word:        word,
-				Position:    g.findMoveStart(word, tilesPlaced, dir),
-				Direction:   dir,
-				TilesPlaced: tilesPlaced,
+		if anchorSeen && len(tilesPlaced) > 0 {
+			if g.gaddag.Contains(word) {
+				move := game.Move{
+					Word:        word,
+					Position:    g.findMoveStart(word, tilesPlaced, dir),
+					Direction:   dir,
+					TilesPlaced: tilesPlaced,
+				}
+
+				// Double-check all perpendicular words before adding the move
+				validMove := true
+				for _, placed := range tilesPlaced {
+					perpWord := g.getPerpendicularWord(
+						placed.Position.Row,
+						placed.Position.Col,
+						&placed.Tile,
+						dir,
+					)
+
+					if len(perpWord) > 1 && !g.gaddag.Contains(perpWord) {
+						validMove = false
+						break
+					}
+				}
+
+				if validMove {
+					*moves = append(*moves, move)
+				}
 			}
-			*moves = append(*moves, move)
 		}
 		return
 	}
@@ -54,14 +75,35 @@ func (g *Generator) extendRight(
 		}
 	} else {
 		// Empty square - check if we can terminate here
-		if anchorSeen && node.IsTerminal() && len(tilesPlaced) > 0 {
-			move := game.Move{
-				Word:        word,
-				Position:    g.findMoveStart(word, tilesPlaced, dir),
-				Direction:   dir,
-				TilesPlaced: tilesPlaced,
+		if anchorSeen && len(tilesPlaced) > 0 {
+			if g.gaddag.Contains(word) {
+				move := game.Move{
+					Word:        word,
+					Position:    g.findMoveStart(word, tilesPlaced, dir),
+					Direction:   dir,
+					TilesPlaced: tilesPlaced,
+				}
+
+				// Double-check all perpendicular words before adding the move
+				validMove := true
+				for _, placed := range tilesPlaced {
+					perpWord := g.getPerpendicularWord(
+						placed.Position.Row,
+						placed.Position.Col,
+						&placed.Tile,
+						dir,
+					)
+
+					if len(perpWord) > 1 && !g.gaddag.Contains(perpWord) {
+						validMove = false
+						break
+					}
+				}
+
+				if validMove {
+					*moves = append(*moves, move)
+				}
 			}
-			*moves = append(*moves, move)
 		}
 
 		// Try placing tiles from rack
@@ -183,19 +225,40 @@ func (g *Generator) extendAfterSeparator(
 		}
 	} else {
 		// Check if we can end here (forms valid word)
-		if node.IsTerminal() && anchorSeen && len(tilesPlaced) > 0 {
-			move := game.Move{
-				Word:        word,
-				Position:    game.Position{Row: pos.row, Col: pos.col},
-				Direction:   dir,
-				TilesPlaced: tilesPlaced,
+		if anchorSeen && len(tilesPlaced) > 0 {
+			if g.gaddag.Contains(word) {
+				move := game.Move{
+					Word:        word,
+					Position:    game.Position{Row: pos.row, Col: pos.col},
+					Direction:   dir,
+					TilesPlaced: tilesPlaced,
+				}
+				if dir == game.Vertical {
+					move.Position.Row = pos.row
+				} else {
+					move.Position.Col = pos.col
+				}
+
+				// Double-check all perpendicular words before adding the move
+				validMove := true
+				for _, placed := range tilesPlaced {
+					perpWord := g.getPerpendicularWord(
+						placed.Position.Row,
+						placed.Position.Col,
+						&placed.Tile,
+						dir,
+					)
+
+					if len(perpWord) > 1 && !g.gaddag.Contains(perpWord) {
+						validMove = false
+						break
+					}
+				}
+
+				if validMove {
+					*moves = append(*moves, move)
+				}
 			}
-			if dir == game.Vertical {
-				move.Position.Row = pos.row
-			} else {
-				move.Position.Col = pos.col
-			}
-			*moves = append(*moves, move)
 		}
 
 		// Try placing tiles from rack going backwards
