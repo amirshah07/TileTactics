@@ -195,6 +195,30 @@
   background-color: var(--danger-hover);
 }
 
+.tile.is-preview.is-blank {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  border: 2px dashed rgba(26, 110, 60, 0.5) !important;
+}
+
+.tile.is-preview.is-blank .tile-letter {
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+}
+
+.board .tile.is-preview {
+  opacity: 0.8;
+  animation: pulse-preview 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-preview {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 @media (max-width: 1024px) and (min-width: 769px) {
   .board-container {
     transform: scale(0.85);

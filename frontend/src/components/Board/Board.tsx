@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Trash2 } from 'lucide-react';
 import Tile from '../Tile/Tile';
 import BlankTileModal from '../BlankTileModal/BlankTileModal';
@@ -19,7 +19,7 @@ interface BoardProps {
 }
 
 const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearFocus = false, hoveredMove }: BoardProps) => {
-  // Initialize empty board
+  // Initialises empty board
   const initializeBoard = (): BoardState => {
     return Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
   };
@@ -31,40 +31,51 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const { showNoMoreTilesError } = useNoMoreTilesToast();
 
-  // Calculate preview positions from hovered move
-  const previewPositions = hoveredMove?.tilesPlaced?.map(tp => ({
-    row: tp.position.row,
-    col: tp.position.col,
-    letter: tp.tile.letter,
-    isBlank: tp.tile.isBlank
-  })) || [];
+  // Calculates preview positions from hovered move
+  const previewPositions = useMemo(() => {
+    if (!hoveredMove) return [];
+    
+    // The tilesPlaced array only contains NEW tiles being placed
+    const positions = hoveredMove.tilesPlaced.map(tp => {
+      const position = {
+        row: tp.position.row,
+        col: tp.position.col,
+        letter: tp.tile.letter || '',  // Keep the letter as-is from WASM
+        isBlank: tp.tile.isBlank
+      };
+      
+      return position;
+    });
+    
+    return positions;
+  }, [hoveredMove]);
 
-  // Handle click on a board square
+  // Handles click on board square
   const handleTileClick = (row: number, col: number) => {
     onFocus();
     setSelectedPosition({ row, col });
   };
 
-  // Notify parent component when board changes
+  // Notifies parent component when board changes
   useEffect(() => {
     onBoardChange(boardState); 
   }, [boardState, onBoardChange]);
 
-  // Clear selection when focus is lost
+  // Clears selection when focus is lost
   useEffect(() => {
     if (!isActive) {
       setSelectedPosition(null);
     }
   }, [isActive]);
   
-  // Clear selection when clearFocus is true
+  // Clears selection when clearFocus is true
   useEffect(() => {
     if (clearFocus && selectedPosition) {
       setSelectedPosition(null);
     }
   }, [clearFocus, selectedPosition]);
 
-  // Check if adding a letter would exceed tile limits
+  // Checks if adding letter would exceed tile limits
   const canAddLetter = (letter: string, isBlank: boolean): boolean => {
     if (isBlank) {
       return blankCount < (LETTER_DISTRIBUTION as Record<string, number>)['BLANK'];
@@ -73,7 +84,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
     }
   };
 
-  // Helper function to move position in a specific direction
+  // Helper function to move position in specific direction
   const movePosition = (position: BoardPosition, direction: 'right' | 'left' | 'up' | 'down'): BoardPosition => {
     const { row, col } = position;
     
@@ -91,7 +102,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
     }
   };
 
-  // Handle keyboard input when a square is selected
+  // Handles keyboard input when square is selected
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isActive || !selectedPosition || isBlankModalOpen) return;
@@ -100,7 +111,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
       const key = e.key.toUpperCase();
       const isShiftPressed = e.shiftKey;
 
-      // Handle letter input
+      // Handles letter input
       if (/^[A-Z]$/.test(key)) {
         if (canAddLetter(key, false)) {
           const newBoardState = [...boardState];
@@ -113,7 +124,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
         }
       }
       
-      // Handle space for blank tiles
+      // Handles space for blank tiles
       else if (e.key === ' ' || e.key === 'Space') {
         e.preventDefault();
         if (canAddLetter('', true)) {
@@ -124,7 +135,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
         }
       }
       
-      // Handle backspace
+      // Handles backspace
       else if (e.key === 'Backspace' || e.key === 'Delete') {
         const newBoardState = [...boardState];
         newBoardState[row][col] = null;
@@ -133,7 +144,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
         setSelectedPosition(movePosition(selectedPosition, direction));
       }
       
-      // Handle arrow keys for manual navigation 
+      // Handles arrow keys for manual navigation 
       else if (e.key.startsWith('Arrow')) {
         e.preventDefault(); 
         let direction: 'up' | 'down' | 'left' | 'right';
@@ -165,7 +176,7 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
     };
   }, [selectedPosition, boardState, usedTiles, blankCount, isActive, isBlankModalOpen, showNoMoreTilesError]);
 
-  // Handle blank tile selection
+  // Handles blank tile selection
   const handleBlankTileSelection = (letter: string) => {
     if (selectedPosition) {
       const { row, col } = selectedPosition;
@@ -189,9 +200,11 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
     setShowClearConfirm(true);
   };
 
-  // Check if a position has a preview tile
+  // Checks if position has preview tile
   const getPreviewTile = (row: number, col: number) => {
-    return previewPositions.find(p => p.row === row && p.col === col);
+    // Only show preview for positions where new tiles are being placed
+    const previewTile = previewPositions.find(p => p.row === row && p.col === col);
+    return previewTile;
   };
 
   return (
@@ -225,17 +238,21 @@ const Board = ({ onBoardChange, usedTiles, blankCount, isActive, onFocus, clearF
                   const multiplier: MultiplierType = BOARD_LAYOUT[rowIndex][colIndex];
                   const isSelected = isActive && selectedPosition?.row === rowIndex && selectedPosition?.col === colIndex;
                   const previewTile = getPreviewTile(rowIndex, colIndex);
+                  
+                  // Only show preview if there's no existing tile at this position
                   const isPreview = !squareContent && !!previewTile;
+                  const displayLetter = squareContent?.letter || previewTile?.letter || '';
+                  const displayIsBlank = squareContent?.isBlank || (previewTile?.isBlank || false);
                   
                   return (
                     <Tile
                       key={`tile-${rowIndex}-${colIndex}`}
-                      letter={squareContent?.letter || previewTile?.letter || ''}
+                      letter={displayLetter}
                       multiplier={multiplier}
                       position={{ row: rowIndex, col: colIndex }}
                       isSelected={isSelected}
-                      isBlank={squareContent?.isBlank || previewTile?.isBlank || false}
-                      isPreview={!!isPreview}
+                      isBlank={displayIsBlank}
+                      isPreview={isPreview}
                       onClick={handleTileClick}
                     />
                   );
