@@ -18,7 +18,7 @@ export default function BoardAnalysis() {
   const [rackLetters, setRackLetters] = useState<string[]>([]);
   const [rackBlanks, setRackBlanks] = useState<boolean[]>([]);
   const [activeComponent, setActiveComponent] = useState<'board' | 'rack' | null>(null);
-  const [selectedDictionary, setSelectedDictionary] = useState<string>('nwl2023');
+  const [selectedDictionary, setSelectedDictionary] = useState<string>('csw24');
   const boardRef = useRef<HTMLDivElement>(null);
   const [shouldClearFocus, setShouldClearFocus] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<MoveResult[] | null>(null);
@@ -188,6 +188,9 @@ export default function BoardAnalysis() {
     setIsAnalyzing(true);
     setAnalysisError(null);
     
+    // Add small delay to ensure spinner is visible
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     try {
       // Converts board to WASM format
       const board = boardState || Array(15).fill(null).map(() => Array(15).fill(null));
@@ -281,8 +284,8 @@ export default function BoardAnalysis() {
               value={selectedDictionary}
               onChange={handleDictionaryChange}
             >
-              <option value="nwl2023">NWL2023 (NASPA Word List)</option>
               <option value="csw24">CSW24 (Collins Scrabble Words)</option>
+              <option value="nwl2023">NWL2023 (NASPA Word List)</option>
             </select>
             <div className="select-arrow"></div>
           </div>
@@ -344,41 +347,59 @@ export default function BoardAnalysis() {
               <Info className="info-icon" />
             </a>
           </h3>
-          {analysisResults ? (
-            <div className="analysis-results">
-              {analysisResults.map((move, idx) => (
-                <div 
-                  key={idx} 
-                  className="move-result"
-                  onMouseEnter={() => setHoveredMove(move)}
-                  onMouseLeave={() => setHoveredMove(null)}
-                  onClick={() => handleMoveClick(move)}
-                >
-                  <div className="move-rank">
-                    <span className="rank-number">{idx + 1}</span>
-                    <div className="rank-indicator"></div>
-                  </div>
-                  <div className="move-details">
-                    <span className="move-word">{move.word}</span>
-                    <div className="move-score">
-                      <span className="score-value">{move.score}</span>
-                      <span className="score-label">pts</span>
+          
+          {isAnalyzing ? (
+            <div className="analysis-results-wrapper">
+              <div className="analysis-loading">
+                <div className="analysis-spinner-container">
+                  <div className="analysis-spinner"></div>
+                  <p className="analysis-spinner-text">
+                    Analysing best moves<span className="dots"><span>.</span><span>.</span><span>.</span></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : analysisResults ? (
+            analysisResults.length > 0 ? (
+              <div className="analysis-results">
+                {analysisResults.map((move, idx) => (
+                  <div 
+                    key={idx} 
+                    className="move-result"
+                    onMouseEnter={() => setHoveredMove(move)}
+                    onMouseLeave={() => setHoveredMove(null)}
+                    onClick={() => handleMoveClick(move)}
+                  >
+                    <div className="move-rank">
+                      <span className="rank-number">{idx + 1}</span>
+                      <div className="rank-indicator"></div>
+                    </div>
+                    <div className="move-details">
+                      <span className="move-word">{move.word}</span>
+                      <div className="move-score">
+                        <span className="score-value">{move.score}</span>
+                        <span className="score-label">pts</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-moves-message">No valid moves available</p>
+            )
           ) : (
             <p>Enter your board state and rack letters, then click "Analyse Best Moves"</p>
           )}
+          
           {analysisError && <p className="error-message">{analysisError}</p>}
+          
           <div className="analyse-button-container">
             <button 
               className="analyse-button"
               onClick={handleAnalyseClick}
               disabled={!rackLetters.length || isAnalyzing}
             >
-              {isAnalyzing ? 'Analyzing...' : 'Analyse Best Moves'}
+              {isAnalyzing ? 'Analysing...' : 'Analyse Best Moves'}
             </button>
           </div>
         </div>
