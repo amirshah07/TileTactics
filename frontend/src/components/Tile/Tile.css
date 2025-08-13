@@ -153,21 +153,17 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border-radius: 3px;
 }
+
 .tile.preview {
   position: relative;
+  opacity: 0.6;
+  z-index: 5;
 }
 
 .tile.preview .letter-content {
-  opacity: 0.5;
+  opacity: 1;
 }
 
-.tile.preview::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  border-radius: 4px;
-  pointer-events: none;
+.tile.preview.is-blank .letter {
+  font-style: italic !important;
 }
