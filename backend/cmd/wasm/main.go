@@ -22,6 +22,126 @@ func init() {
 	gaddagCache = make(map[string]*gaddag.GADDAG)
 }
 
+// ValidationRequest represents word validation input
+type ValidationRequest struct {
+	Words      []string `json:"words"`
+	Dictionary string   `json:"dictionary"`
+}
+
+// ValidationResponse represents word validation output
+type ValidationResponse struct {
+	Results      []WordValidation `json:"results"`
+	AllValid     bool             `json:"allValid"`
+	InvalidWords []string         `json:"invalidWords,omitempty"`
+	Error        string           `json:"error,omitempty"`
+}
+
+// WordValidation represents validation result for a single word
+type WordValidation struct {
+	Word    string `json:"word"`
+	IsValid bool   `json:"isValid"`
+}
+
+// validateWords validates a list of words against the dictionary
+func validateWords(this js.Value, args []js.Value) (result interface{}) {
+	// Wrap in panic recovery
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Panic in validateWords: %v\n", r)
+			response := ValidationResponse{
+				Error: fmt.Sprintf("Internal error: %v", r),
+			}
+			responseJSON, _ := json.Marshal(response)
+			js.Global().Get("console").Call("error", "WASM panic:", r)
+			result = string(responseJSON)
+		}
+	}()
+
+	// Parse input
+	if len(args) != 1 {
+		return createValidationErrorResponse("Expected 1 argument")
+	}
+
+	jsonStr := args[0].String()
+	var request ValidationRequest
+	if err := json.Unmarshal([]byte(jsonStr), &request); err != nil {
+		return createValidationErrorResponse(fmt.Sprintf("Failed to parse request: %v", err))
+	}
+
+	// Validate input
+	if len(request.Words) == 0 {
+		// Empty word list - return empty results
+		return createValidationErrorResponse("No words to validate")
+	}
+
+	// Load or get cached GADDAG
+	g, err := getGaddag(request.Dictionary)
+	if err != nil {
+		return createValidationErrorResponse(fmt.Sprintf("Failed to load dictionary: %v", err))
+	}
+
+	// Validate each word
+	results := make([]WordValidation, len(request.Words))
+	invalidWords := []string{}
+	allValid := true
+
+	for i, word := range request.Words {
+		// Skip empty words
+		if word == "" {
+			results[i] = WordValidation{
+				Word:    word,
+				IsValid: false,
+			}
+			allValid = false
+			invalidWords = append(invalidWords, word)
+			continue
+		}
+
+		// Handle blanks - blanks are represented as lowercase in the word
+		// Convert word with blanks to check format
+		checkWord := ""
+		for _, ch := range word {
+			if ch >= 'a' && ch <= 'z' {
+				// Lowercase indicates blank tile - convert to uppercase for checking
+				checkWord += strings.ToUpper(string(ch))
+			} else {
+				checkWord += string(ch)
+			}
+		}
+
+		// Check if word exists in dictionary
+		isValid := g.Contains(checkWord)
+
+		results[i] = WordValidation{
+			Word:    word,
+			IsValid: isValid,
+		}
+
+		if !isValid {
+			allValid = false
+			invalidWords = append(invalidWords, word)
+		}
+	}
+
+	// Create response
+	response := ValidationResponse{
+		Results:      results,
+		AllValid:     allValid,
+		InvalidWords: invalidWords,
+	}
+
+	// Return JSON response
+	responseJSON, _ := json.Marshal(response)
+	return string(responseJSON)
+}
+
+// createValidationErrorResponse creates an error response for validation
+func createValidationErrorResponse(error string) string {
+	response := ValidationResponse{Error: error}
+	responseJSON, _ := json.Marshal(response)
+	return string(responseJSON)
+}
+
 // AnalysisRequest represents the input from JavaScript
 type AnalysisRequest struct {
 	Board          [][]TileJSON   `json:"board"`
@@ -66,16 +186,46 @@ type PlacedTileJSON struct {
 }
 
 // analyzePosition is the main function exposed to JavaScript
-func analyzePosition(this js.Value, args []js.Value) interface{} {
+func analyzePosition(this js.Value, args []js.Value) (result interface{}) {
+	// Always return something, even on panic
+	result = createErrorResponse("Unexpected error occurred")
+
+	// Wrap in panic recovery
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Panic in analyzePosition: %v\n", r)
+			response := AnalysisResponse{
+				Error: fmt.Sprintf("Internal error: %v", r),
+			}
+			responseJSON, _ := json.Marshal(response)
+			js.Global().Get("console").Call("error", "WASM panic:", r)
+			result = string(responseJSON)
+		}
+	}()
+
 	// Parse input
 	if len(args) != 1 {
 		return createErrorResponse("Expected 1 argument")
 	}
 
 	jsonStr := args[0].String()
+	if jsonStr == "" {
+		return createErrorResponse("Empty request")
+	}
+
 	var request AnalysisRequest
 	if err := json.Unmarshal([]byte(jsonStr), &request); err != nil {
 		return createErrorResponse(fmt.Sprintf("Failed to parse request: %v", err))
+	}
+
+	// Validate rack is not empty
+	if len(request.Rack) == 0 {
+		// Return empty moves list if no tiles in rack
+		response := AnalysisResponse{
+			Moves: []MoveJSON{},
+		}
+		responseJSON, _ := json.Marshal(response)
+		return string(responseJSON)
 	}
 
 	// Load or get cached GADDAG
@@ -100,14 +250,32 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 		}
 	}
 
-	// Convert rack from JSON
-	rack := make([]game.Tile, len(request.Rack))
-	for i, tileJSON := range request.Rack {
-		rack[i] = game.Tile{
-			Letter:  rune(tileJSON.Letter[0]),
-			Value:   tileJSON.Value,
-			IsBlank: tileJSON.IsBlank,
+	// Convert rack from JSON - handle empty letters
+	rack := make([]game.Tile, 0, len(request.Rack))
+	for _, tileJSON := range request.Rack {
+		if tileJSON.Letter == "" {
+			// Handle blank tiles
+			rack = append(rack, game.Tile{
+				Letter:  '?',
+				Value:   0,
+				IsBlank: true,
+			})
+		} else {
+			rack = append(rack, game.Tile{
+				Letter:  rune(tileJSON.Letter[0]),
+				Value:   tileJSON.Value,
+				IsBlank: tileJSON.IsBlank,
+			})
 		}
+	}
+
+	// If rack is still empty after processing, return no moves
+	if len(rack) == 0 {
+		response := AnalysisResponse{
+			Moves: []MoveJSON{},
+		}
+		responseJSON, _ := json.Marshal(response)
+		return string(responseJSON)
 	}
 
 	// Convert remaining tiles
@@ -123,6 +291,15 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 	// Generate moves
 	gen := generator.New(g, b)
 	allMoves := gen.GenerateMoves(rack)
+
+	// If no moves found, return empty list
+	if len(allMoves) == 0 {
+		response := AnalysisResponse{
+			Moves: []MoveJSON{},
+		}
+		responseJSON, _ := json.Marshal(response)
+		return string(responseJSON)
+	}
 
 	// Evaluate moves
 	eval := evaluator.New(remainingTiles)
@@ -150,10 +327,19 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 		// Convert tiles placed
 		moveJSON.TilesPlaced = make([]PlacedTileJSON, len(move.TilesPlaced))
 		for j, placed := range move.TilesPlaced {
+			// Keep the letter even for blank tiles
+			// Blank tiles should have their designated letter (what they represent)
+			letter := string(placed.Tile.Letter)
+
+			// Only set to empty if there's truly no letter (which shouldn't happen in valid moves)
+			if placed.Tile.Letter == 0 {
+				letter = ""
+			}
+
 			moveJSON.TilesPlaced[j] = PlacedTileJSON{
 				Position: PositionJSON{Row: placed.Position.Row, Col: placed.Position.Col},
 				Tile: TileJSON{
-					Letter:  string(placed.Tile.Letter),
+					Letter:  letter, // Keeps the letter for blanks
 					Value:   placed.Tile.Value,
 					IsBlank: placed.Tile.IsBlank,
 				},
@@ -163,8 +349,19 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 		// Convert leave
 		moveJSON.Leave = make([]TileJSON, len(move.Leave))
 		for j, tile := range move.Leave {
+			letter := string(tile.Letter)
+
+			// For leave tiles, blanks might be represented as '?'
+			// Keep the letter as-is unless it's truly empty
+			if tile.Letter == 0 {
+				letter = ""
+			} else if tile.IsBlank && tile.Letter == '?' {
+				// Leave blanks as '?' in the leave
+				letter = "?"
+			}
+
 			moveJSON.Leave[j] = TileJSON{
-				Letter:  string(tile.Letter),
+				Letter:  letter,
 				Value:   tile.Value,
 				IsBlank: tile.IsBlank,
 			}
@@ -174,7 +371,11 @@ func analyzePosition(this js.Value, args []js.Value) interface{} {
 	}
 
 	// Return JSON response
-	responseJSON, _ := json.Marshal(response)
+	responseJSON, err := json.Marshal(response)
+	if err != nil {
+		return createErrorResponse(fmt.Sprintf("Failed to marshal response: %v", err))
+	}
+
 	return string(responseJSON)
 }
 
@@ -232,8 +433,9 @@ func createErrorResponse(error string) string {
 }
 
 func main() {
-	// Register the function
+	// Register the functions
 	js.Global().Set("analyzePosition", js.FuncOf(analyzePosition))
+	js.Global().Set("validateWords", js.FuncOf(validateWords))
 
 	// Keep the program running
 	select {}
