@@ -249,7 +249,7 @@ func (g *Generator) getPerpendicularWord(row, col int, placedTile *game.Tile, di
 	return word
 }
 
-// getAllPerpendicularWords gets ALL perpendicular words formed by a move
+// getAllPerpendicularWords gets all perpendicular words formed by a move
 func (g *Generator) getAllPerpendicularWords(move game.Move) []string {
 	perpWords := make(map[string]bool)
 
@@ -316,7 +316,7 @@ func (g *Generator) removeDuplicates(moves []game.Move) []game.Move {
 			continue
 		}
 
-		// Get ALL perpendicular words formed by this move
+		// Get all perpendicular words formed by this move
 		perpWords := g.getAllPerpendicularWords(move)
 
 		// Validate each perpendicular word
