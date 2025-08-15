@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar/Navbar';
 import Homepage from './pages/Homepage/Homepage';
 import BoardAnalysis from './pages/BoardAnalysis/BoardAnalysis';
-import VsAI from './pages/vsAI/vsAI.tsx';
+import VsAI from './pages/vsAI/vsAI';
 import WordFinder from './pages/WordFinder/WordFinder';
 import BestMovesExplanation from './pages/BestMovesExplanation/BestMovesExplanation';
 import PageNotFound from './pages/PageNotFound/PageNotFound';
