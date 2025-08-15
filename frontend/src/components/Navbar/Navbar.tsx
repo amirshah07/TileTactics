@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="navbar-container">
         <div className="navbar-left">
           <Link to="/">
-            <h1>TileTactics</h1>
+            <h1>Tile Tactics</h1>
           </Link>
         </div>
         

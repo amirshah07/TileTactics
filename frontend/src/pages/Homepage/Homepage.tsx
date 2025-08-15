@@ -16,7 +16,7 @@ export default function Homepage() {
   return (
     <div className="homepage-container">
       <header className="homepage-header">
-        <h1>TileTactics</h1>
+        <h1>Tile Tactics</h1>
       </header>
 
       <div className="homepage-content">
