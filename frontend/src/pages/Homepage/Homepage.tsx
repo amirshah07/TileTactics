@@ -1,31 +1,31 @@
+import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
 
 export default function Homepage() {
+  const navigate = useNavigate();
+  
   const navigateToAnalysis = () => {
-    window.location.href = '/board-analysis';
+    navigate('/board-analysis');
   };
   
   const navigateToAI = () => {
-    window.location.href = '/vs-ai';
+    navigate('/vs-ai');
   };
   
   const navigateToWordFinder = () => {
-    window.location.href = '/word-finder';
+    navigate('/word-finder');
   };
 
   return (
     <div className="homepage-container">
-      <header className="homepage-header">
-        <h1>Tile Tactics</h1>
-      </header>
-
       <div className="homepage-content">
 
         <article className="homepage-section">
           <h2>Board Analysis: Find The Best Move</h2>
           
           <p>
-            Explain this here
+            Enter your game position and rack tiles to discover strategically optimal plays. 
+            The analyser evaluates moves based on score, leave quality, board position, defense, and game stage.
           </p>
           
           <div className="article-button">
@@ -39,7 +39,8 @@ export default function Homepage() {
           <h2>vs TileTacticsAI: The Ultimate Challenge</h2>
           
           <p>
-            Explain this here
+            Play a complete game against an extremely strong AI opponent. 
+            Features include tile exchanges, passing, and all standard game rules.
           </p>
           
           <div className="article-button">
@@ -53,7 +54,8 @@ export default function Homepage() {
           <h2>Word Finder: Discover All Possibilities</h2>
           
           <p>
-            Explain this here
+            Enter your tiles to find every possible valid word. 
+            Results organised by length, with blank tile positions clearly marked.
           </p>
           
           <div className="article-button">
