@@ -381,13 +381,16 @@ func analyzePosition(this js.Value, args []js.Value) (result interface{}) {
 
 // getGaddag loads or retrieves cached GADDAG
 func getGaddag(dictionary string) (*gaddag.GADDAG, error) {
-	if g, exists := gaddagCache[dictionary]; exists {
+	// Normalise dictionary name to lowercase for consistency
+	dictLower := strings.ToLower(dictionary)
+
+	if g, exists := gaddagCache[dictLower]; exists {
 		return g, nil
 	}
 
 	// Map dictionary name to filename
 	var filename string
-	switch dictionary {
+	switch dictLower {
 	case "csw24":
 		filename = "CSW24.txt"
 	case "nwl2023":
@@ -420,8 +423,7 @@ func getGaddag(dictionary string) (*gaddag.GADDAG, error) {
 		}
 	}
 
-	// Cache it
-	gaddagCache[dictionary] = g
+	gaddagCache[dictLower] = g
 	return g, nil
 }
 
