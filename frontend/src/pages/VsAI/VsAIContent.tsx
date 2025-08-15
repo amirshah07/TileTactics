@@ -11,7 +11,7 @@ import { useNoMoreTilesToast } from '../../components/NoMoreTilesToast/useNoMore
 import { loadWasm, analyzeBoard, validateWords as validateWordsWasm } from '../../utils/wasmLoader';
 import { LETTER_DISTRIBUTION, LETTER_VALUES, BOARD_LAYOUT } from '../../utils/constants';
 import type { GameTile, GameState, Move, TileBagState, PlacedTile } from '../../utils/gameTypes';
-import './vsAI.css';
+import './VsAI.css';
 
 // Detect if device supports touch
 const isTouchDevice = () => {
