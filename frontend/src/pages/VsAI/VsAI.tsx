@@ -1,5 +1,5 @@
 import { NoMoreTilesToastProvider } from '../../components/NoMoreTilesToast/NoMoreTilesToastContext.tsx';
-import VsAIContent from './VsAIContent';
+import VsAIContent from './vsAIContent';
 
 const VsAI = () => {
   return (
