@@ -1,4 +1,4 @@
-# <img src="frontend/public/TileTactics.svg" width="30" height="30" style="position: relative; top: 6px; margin-right: 4px;"> Tile Tactics
+# <img src="frontend/public/TileTactics.svg" width="30" height="30" style="vertical-align: middle;"> Tile Tactics
 
 Welcome to Tile Tactics, an advanced Scrabble analysis and training platform designed to help players improve their game through strategic move evaluation and intelligent practice.
 
