@@ -45,7 +45,7 @@ Tile Tactics provides powerful tools for Scrabble players to analyze positions, 
 
 ## 💻 Tech Stack
 
-* **Frontend:** React + JavaScript
+* **Frontend:** React + TypeScript
 * **Backend:** Go (compiled to WebAssembly)
 * **Deployment:** Fully client-side - no server required due to WebAssembly
 
