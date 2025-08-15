@@ -1,0 +1,129 @@
+.explanation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background-color: var(--background);
+  color: var(--dark-text);
+  font-family: 'Georgia', serif;
+  line-height: 1.7;
+}
+
+.explanation-container h1 {
+  color: var(--primary);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.explanation-intro {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background-color: #faf4de;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.explanation-intro p {
+  font-size: 1.1rem;
+  text-align: center;
+  margin: 0;
+  color: var(--text);
+}
+
+.evaluation-factors {
+  margin-bottom: 2rem;
+}
+
+.evaluation-factors h2 {
+  color: var(--primary);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #d9c9a3;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.factor-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #faf4de;
+  border: 1px solid #e8ddc7;
+  border-left: 5px solid var(--primary);
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.factor-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+.factor-card:last-child {
+  margin-bottom: 0;
+}
+
+.factor-card h3 {
+  color: var(--primary);
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.factor-card p {
+  margin: 0;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .explanation-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .explanation-container h1 {
+    font-size: 2rem;
+  }
+  
+  .evaluation-factors h2 {
+    font-size: 1.6rem;
+  }
+  
+  .factor-card {
+    padding: 1rem;
+  }
+  
+  .factor-card h3 {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .explanation-container {
+    padding: 1rem;
+  }
+  
+  .explanation-container h1 {
+    font-size: 1.5rem;
+  }
+  
+  .evaluation-factors h2 {
+    font-size: 1.3rem;
+  }
+  
+  .factor-card {
+    padding: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .factor-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .explanation-intro {
+    padding: 1.2rem;
+  }
+  
+  .explanation-intro p {
+    font-size: 1rem;
+  }
+}
