@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar/Navbar';
 import Homepage from './pages/Homepage/Homepage';
 import BoardAnalysis from './pages/BoardAnalysis/BoardAnalysis';
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="*" element={<PageNotFound/>} />
           </Routes>
         </main>
+        <Analytics />
       </div>
     </BrowserRouter>
   );
